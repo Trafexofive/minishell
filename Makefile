@@ -3,7 +3,7 @@ CC := cc
 
 NAME	:= minishell
 
-CFLAGS	:= -Wextra -Wall -Werror -Lreadline
+CFLAGS	:= -Wextra -Wall -Werror 
 
 SRCS	:= main.c #tokenizer.c lexer.c
 
@@ -14,7 +14,7 @@ OBJS	:= ${SRCS:.c=.o}
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME) -lreadline
 
 lib : 
 	@make -C ./libft

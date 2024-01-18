@@ -1,8 +1,6 @@
 
 
 #include "minish.h"
-#include <readline/history.h>
-#include <stdio.h>
 
 int main() {
 
