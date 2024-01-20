@@ -2,12 +2,8 @@
 
 #include "minish.h"
 
-int main() {
+int main(int ac, char **av) {
 
-  char *buffer;
-
-  buffer = readline("mokshell->");
-  printf("%s\n", buffer);
-  free(buffer);
+  parse(ac, av);
   return 1;
 }
