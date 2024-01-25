@@ -2,8 +2,8 @@
 
 #include "minish.h"
 
-int main(int ac, char **av) {
+int main(void) {
 
-  parse(ac, av);
+    parse("ls -la");
   return 1;
 }

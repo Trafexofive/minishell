@@ -5,7 +5,7 @@ NAME	:= minishell
 
 CFLAGS	:= -Wextra -Wall -Werror 
 
-SRCS	:= main.c #tokenizer.c lexer.c
+SRCS	:= main.c tokenizer.c #lexer.c
 
 LIBFT := libft/libft.a
 
@@ -22,6 +22,8 @@ lib :
 %.o: %.c $(HEADERS) | lib
 	@$(CC) $(CFLAGS) -c $< -o $@
 
+run :
+	./minishell
 push:
 	git add .
 	git commit -m "Lazy_push"
