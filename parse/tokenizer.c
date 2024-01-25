@@ -1,10 +1,19 @@
 
 
 #include "../inc/minish.h"
-#include "../libft/libft.h"
 
 static t_alloc *first_adress;
 static t_oken *head_token;
+
+int after_quote(char *line, t_info *info) {
+  int i = info->cursor;
+  while (line[i]) {
+    if (line[i] == DQUOTE || line[i] == QUOTE)
+      return i;
+    i++;
+  }
+  return NULL;
+}
 
 t_oken **parse(const char *line);
 void alloc_append_last(void *alloc_ptr) {
@@ -19,7 +28,7 @@ void alloc_append_last(void *alloc_ptr) {
 void free_all(void) {
   while (first_adress->next != NULL) {
     free(first_adress->address);
-    first_adress->next;
+    first_adress = first_adress->next;
   }
 }
 
@@ -92,28 +101,49 @@ t_oken **tokenize(char *line) {
 void tokenize_word(char *token, t_info info);
 void tokenize_operator(char *token);
 // tokenizing words and operators
-void handle_quote(char *line, t_info line_info) {
+void handle_quote(char *line, t_info *info) {
   // handling quotes by taking everything inside them regardless;
+  char *str_token;
+  int i = info->cursor + 1;
+  int end = after_quote(line, info);
+  int len = end - info->cursor + 1;
+  str_token = chad_alloc(sizeof(char), len);
+  str_token[len] = '\n';
+  ft_strlcpy(char *dst, const char *src, size_t dstsize)
 }
 
-bool check_line(char *line, t_info *info); // for checking early parse errors
-                                           // such ar the '=' at the beggining
+// return the index of end of quote + 1 aka first occurence of quote;
+
+int keep_track_of_quote(char *line, t_info *info);
+
+void *check_line(char *line, t_info *info) // for checking early parse errors
+{
+  if (line[info->cursor] == '=')
+    return NULL;
+  while (is_space(line[info->cursor])) {
+    if (!line[info->cursor])
+      return (NULL);
+    info->cursor++;
+  }
+}
+// such ar the '=' at the beggining
 // will also return index of the first word occurence
 
 // maybe for operators tokenize everything (word + op + word)
-bool is_operator(char *line);
+bool is_operator(char c);
 
-void main_loop(char *line, t_info *info) {
-  int i;
+void handle_operator(char *line, t_info *info);
 
-  i = check_line(line);
+void *main_loop(char *line, t_info *info) {
 
-  while (line[i] && is_space(line[i])) {
-    if (line[i] == DQUOTE || line[i] == QUOTE)
-      i = handle_quote(line);
-    else if (is_operator(line[i]))
+  if (check_line(line, info) == NULL)
+    return (NULL);
+  while (line[info->cursor]) {
+    if (line[info->cursor] == DQUOTE || line[info->cursor] == QUOTE)
+      handle_quote(line, info);
+    else if (is_operator(line[info->cursor]))
 
-      i++;
+      info->cursor++;
   }
 }
 
@@ -125,6 +155,8 @@ int main(void) {
 
   line = ft_strdup("ls -la > hello.txt");
   info = chad_alloc(sizeof(t_info), 1);
+  info->cursor = 0;
+
   main_loop(line, info);
 
   return EXIT_SUCCESS;
