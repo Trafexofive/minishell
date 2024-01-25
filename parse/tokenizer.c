@@ -1,7 +1,7 @@
 
 
-#include "libft/libft.h"
-#include "minish.h"
+#include "../inc/minish.h"
+#include "../libft/libft.h"
 
 static t_alloc *first_adress;
 static t_oken *head_token;
@@ -108,9 +108,9 @@ void main_loop(char *line, t_info *info) {
 
   i = check_line(line);
 
-  while (line[i]) {
+  while (line[i] && is_space(line[i])) {
     if (line[i] == DQUOTE || line[i] == QUOTE)
-      handle_quote(line);
+      i = handle_quote(line);
     else if (is_operator(line[i]))
 
       i++;
