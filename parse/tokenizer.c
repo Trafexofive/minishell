@@ -1,10 +1,20 @@
 
 
 #include "../inc/minish.h"
+#include <stdio.h>
 
-static t_alloc *first_adress;
-static t_oken *head_token;
+void print_arr(char **str) {
+  int i = -1;
 
+  while (str[++i])
+    printf("%s\n", str[i]);
+}
+
+bool is_space(char c) {
+  if (c == ' ' || c == '\n' || c == '\t')
+    return TRUE;
+  return FALSE;
+}
 int after_quote(char *line, t_info *info) {
   int i = info->cursor;
   while (line[i]) {
@@ -12,39 +22,10 @@ int after_quote(char *line, t_info *info) {
       return i;
     i++;
   }
-  return NULL;
+  return -1;
 }
 
 t_oken **parse(const char *line);
-void alloc_append_last(void *alloc_ptr) {
-  t_alloc new_alloc_node;
-  while (first_adress->next != NULL) {
-    first_adress = first_adress->next;
-  }
-  first_adress->next = &new_alloc_node;
-  new_alloc_node.address = alloc_ptr;
-}
-
-void free_all(void) {
-  while (first_adress->next != NULL) {
-    free(first_adress->address);
-    first_adress = first_adress->next;
-  }
-}
-
-void *chad_alloc(size_t size, int quantity) {
-  void *alloc_ptr;
-
-  alloc_ptr = malloc(size * quantity);
-  if (alloc_ptr == NULL)
-    return (NULL);
-  if (first_adress == NULL)
-    first_adress = alloc_ptr;
-  else {
-    alloc_append_last(alloc_ptr);
-  }
-  return (alloc_ptr);
-}
 
 void default_token(t_oken *head) {
   // default values for the token node;
@@ -57,107 +38,181 @@ void default_token(t_oken *head) {
   head->data_type = -1;
 }
 // allocate for the token outside
-t_oken *add_token(char *str_token) {
+t_oken *add_token(char *str_token, t_info *info) {
   size_t size = sizeof(t_oken);
-  while (head_token->next != NULL) {
-    head_token = head_token->next;
-    if (head_token == NULL) {
-      t_oken *token = chad_alloc(size, 1);
-      head_token->token = str_token;
-      default_token(head_token);
-    } else {
-      t_oken *token = chad_alloc(size, 1);
-      head_token->token = str_token;
+  if (info->head == NULL) {
+    t_oken *token = chad_alloc(size, 1);
+    info->head = token;
+    default_token(token);
+    token->token = str_token;
+    return (token);
+  } else {
+    t_oken *head_token = info->head;
+    while (head_token->next != NULL) {
+      head_token = head_token->next;
     }
+
+    t_oken *token = chad_alloc(size, 1);
+    default_token(token);
+    head_token->next = token;
+    token->prev = head_token;
+    token->token = str_token;
+    return (token);
   }
 }
 
-void print_arr(char **str) {
-  int i = -1;
-
-  while (str[++i])
-    printf("%s\n", str[i]);
-}
-// add and lex
-void *add_token_smart(size_t size, int index, int end, char **str);
-// maybe call it auto add;
-
-bool is_space(char c) {
-  if (c == ' ' || c == '\n' || c == '\t')
-    return TRUE;
-  return FALSE;
-}
 // syntax checking
 void check_syntax(t_oken **tokens);
 
-t_oken **tokenize(char *line) {
-  char **tokens;
-
-  tokens = ft_split(line, ' ');
-  print_arr(tokens);
-  return (NULL);
-}
-
-void tokenize_word(char *token, t_info info);
-void tokenize_operator(char *token);
 // tokenizing words and operators
-void handle_quote(char *line, t_info *info) {
+t_oken *handle_quote(char *line, t_info *info) {
   // handling quotes by taking everything inside them regardless;
   char *str_token;
+  t_oken *new_token;
+  int j = -1;
   int i = info->cursor + 1;
   int end = after_quote(line, info);
   int len = end - info->cursor + 1;
   str_token = chad_alloc(sizeof(char), len);
-  str_token[len] = '\n';
-  ft_strlcpy(char *dst, const char *src, size_t dstsize)
+  str_token[len] = '\0';
+  while (str_token[++j]) {
+    str_token[j] = line[i];
+    i++;
+  }
+  new_token = add_token(str_token, info);
+  info->cursor = end;
+  return (new_token);
 }
 
 // return the index of end of quote + 1 aka first occurence of quote;
 
 int keep_track_of_quote(char *line, t_info *info);
 
-void *check_line(char *line, t_info *info) // for checking early parse errors
+bool check_line(char *line, t_info *info) // for checking early parse errors
 {
-  if (line[info->cursor] == '=')
-    return NULL;
   while (is_space(line[info->cursor])) {
     if (!line[info->cursor])
       return (NULL);
     info->cursor++;
   }
+  return FALSE;
 }
 // such ar the '=' at the beggining
 // will also return index of the first word occurence
 
 // maybe for operators tokenize everything (word + op + word)
-bool is_operator(char c);
+bool is_operator(char c) {
+  if (c == PIPE || c == '>' || c == '<')
+    return TRUE;
+  return FALSE;
+}
 
-void handle_operator(char *line, t_info *info);
+bool is_quote(char c) {
+  if (c == DQUOTE || c == QUOTE)
+    return TRUE;
+  return FALSE;
+}
 
-void *main_loop(char *line, t_info *info) {
+int after_word(char *line, t_info *info) {
+  int i = info->cursor;
 
-  if (check_line(line, info) == NULL)
-    return (NULL);
+  while (line[i] && !is_space(line[i]) && !is_quote(line[i]))
+    i++;
+  i--;
+  return (i);
+}
+
+void handle_operator(char *line, t_info *info) {
+  char *str_token = chad_alloc(1, 2);
+  str_token[0] = '|';
+  str_token[1] = '\0';
+  if (line[info->cursor] == PIPE) {
+    add_token(str_token, info);
+    info->cursor++;
+  } else if (line[info->cursor] == '>') {
+    if (line[info->cursor++] == '>') {
+      char *str_token = ft_strdup(">>");
+      alloc_append_last(str_token);
+      add_token(str_token, info);
+      info->cursor += 2;
+    } else {
+      char *str_token = ft_strdup(">");
+      alloc_append_last(str_token);
+      add_token(str_token, info);
+      info->cursor++;
+    }
+  } else if (line[info->cursor] == '<') {
+    if (line[info->cursor++] == '<') {
+      char *str_token = ft_strdup("<<");
+      alloc_append_last(str_token);
+      add_token(str_token, info);
+      info->cursor += 2;
+    } else {
+      char *str_token = ft_strdup("<");
+      alloc_append_last(str_token);
+      add_token(str_token, info);
+      info->cursor++;
+    }
+  }
+}
+void handle_word(char *line, t_info *info) {
+  char *str_token;
+  int j = -1;
+  int i = info->cursor + 1;
+  int end = after_quote(line, info);
+  int len = end - info->cursor + 1;
+  str_token = chad_alloc(sizeof(char), len);
+  str_token[len] = '\0';
+  while (str_token[++j]) {
+    str_token[j] = line[i];
+    i++;
+  }
+  add_token(str_token, info);
+}
+
+void handle_dollar(char *line, t_info *info);
+
+void main_loop(char *line, t_info *info) {
+
+  if (check_line(line, info) == FALSE)
+    return;
   while (line[info->cursor]) {
     if (line[info->cursor] == DQUOTE || line[info->cursor] == QUOTE)
       handle_quote(line, info);
     else if (is_operator(line[info->cursor]))
+      handle_operator(line, info);
+    else if (ft_isascii(line[info->cursor]))
+      handle_word(line, info);
+    else if (line[info->cursor] == '$')
+      handle_dollar(line, info);
 
-      info->cursor++;
+    info->cursor++;
   }
 }
 
-t_oken **parse(const char *line) { return (NULL); }
+bool is_in(char c, const char *str);
+
+void print_tokens(t_oken *head_token) {
+  t_oken *ptr = head_token;
+  while (ptr->next != NULL) {
+    printf("token => %s |\n", ptr->token);
+    ptr = ptr->next;
+  }
+}
 
 int main(void) {
   t_info *info;
   char *line;
 
   line = ft_strdup("ls -la > hello.txt");
+  puts("hello---------------");
   info = chad_alloc(sizeof(t_info), 1);
+  info->head = NULL;
   info->cursor = 0;
 
   main_loop(line, info);
+  print_tokens(info->head);
+  free_all();
 
   return EXIT_SUCCESS;
 }
