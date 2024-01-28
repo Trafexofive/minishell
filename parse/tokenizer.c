@@ -95,9 +95,12 @@ int keep_track_of_quote(char *line, t_info *info);
 
 bool check_line(char *line, t_info *info) // for checking early parse errors
 {
-  while (is_space(line[info->cursor])) {
-    if (!line[info->cursor])
-      return (NULL);
+  while (line[info->cursor]) {
+    puts("test");
+    printf("info cursor==>%d\n", info->cursor);
+    printf("line ==> %s\n", line);
+    if (!is_space(line[info->cursor]))
+      break;
     info->cursor++;
   }
   return FALSE;
@@ -178,7 +181,7 @@ void handle_dollar(char *line, t_info *info) {
 
 void main_loop(char *line, t_info *info) {
 
-  if (check_line(line, info) == FALSE)
+  if (check_line(line, info) != FALSE)
     return;
   while (line[info->cursor]) {
     if (line[info->cursor] == DQUOTE || line[info->cursor] == QUOTE)
@@ -211,7 +214,7 @@ int main(void) {
   line = ft_strdup("ls -la > hello.txt");
   info = chad_alloc(sizeof(t_info), 1, alloc_head);
   info->head = NULL;
-  puts("before alloc >---------------");
+  puts("before main_loop>---------------");
   info->cursor = 0;
 
   main_loop(line, info);

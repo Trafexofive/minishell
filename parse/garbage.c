@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 void *chad_alloc(size_t size, int quantity, t_alloc *first_adress) {
+  puts("entered chad alloc");
   void *alloc_ptr;
 
   alloc_ptr = malloc(size * quantity);
@@ -22,7 +23,7 @@ void *chad_alloc(size_t size, int quantity, t_alloc *first_adress) {
     new_alloc_node->address = alloc_ptr;
     new_alloc_node->next = NULL;
   }
-  puts("inside chad alloc");
+  puts("exiting chad alloc");
   return (alloc_ptr);
 }
 
