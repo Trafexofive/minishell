@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 typedef struct s_alloc {
-  void *address;
+  static void *address;
   struct s_alloc *next;
 } t_alloc;
 

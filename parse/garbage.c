@@ -6,6 +6,8 @@
 static t_alloc *first_adress;
 
 void alloc_append_last(void *alloc_ptr) {
+  if (!first_adress)
+    first_adress = ft_calloc(1, sizeof(t_alloc));
   if (!first_adress->address)
     first_adress->address = alloc_ptr;
   else {
@@ -32,6 +34,8 @@ void *chad_alloc(size_t size, int quantity) {
   alloc_ptr = malloc(size * quantity);
   if (!alloc_ptr)
     return (NULL);
+  if (!first_adress)
+    first_adress = ft_calloc(1, sizeof(t_alloc));
   if (!first_adress->address) {
     first_adress->address = alloc_ptr;
   } else {

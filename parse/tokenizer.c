@@ -1,6 +1,7 @@
 
 
 #include "../inc/minish.h"
+
 #include <stdio.h>
 #include <unistd.h>
 
@@ -172,7 +173,10 @@ void handle_word(char *line, t_info *info) {
   add_token(str_token, info);
 }
 
-void handle_dollar(char *line, t_info *info);
+void handle_dollar(char *line, t_info *info) {
+  handle_word(line, info);
+  return;
+}
 
 void main_loop(char *line, t_info *info) {
 
@@ -207,7 +211,7 @@ int main(void) {
   char *line;
 
   line = ft_strdup("ls -la > hello.txt");
-  puts("hello---------------");
+  puts("before alloc >---------------");
   info = chad_alloc(sizeof(t_info), 1);
   info->head = NULL;
   info->cursor = 0;

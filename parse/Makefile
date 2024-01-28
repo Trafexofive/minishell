@@ -5,9 +5,9 @@ NAME	:= minishell
 
 CFLAGS	:= -Wextra -Wall -Werror 
 
-SRCS	:= parse/tokenizer.c parse/garbage.c
+SRCS	:= tokenizer.c garbage.c
 
-LIBFT := libft/libft.a
+LIBFT := ../libft/libft.a
 
 OBJS	:= ${SRCS:.c=.o}
 
@@ -17,7 +17,7 @@ $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME) #-lreadline
 
 lib : 
-	@make -C ./libft
+	@make -C ../libft
 
 %.o: %.c $(HEADERS) | lib
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -30,11 +30,11 @@ push:
 	git push
 
 clean:
-	make clean -C ./libft
+	make clean -C ../libft
 	rm -rf $(OBJS)
 
 fclean: clean
-	make fclean -C ./libft
+	make fclean -C ../libft
 	rm -rf $(NAME)
 
 re: fclean all
