@@ -3,11 +3,8 @@
 #include "../libft/libft.h"
 #include <stdio.h>
 
-void *chad_alloc(size_t size, int quantity);
-
-void *chad_alloc(size_t size, int quantity) {
+void *chad_alloc(size_t size, int quantity, t_alloc *first_adress) {
   void *alloc_ptr;
-  t_alloc *first_adress;
 
   alloc_ptr = malloc(size * quantity);
   if (!alloc_ptr)

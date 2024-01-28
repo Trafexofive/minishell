@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+static t_alloc *alloc_head = NULL;
+
 void print_arr(char **str) {
   int i = -1;
 
@@ -43,7 +45,7 @@ void default_token(t_oken *head) {
 t_oken *add_token(char *str_token, t_info *info) {
   size_t size = sizeof(t_oken);
   if (info->head == NULL) {
-    t_oken *token = chad_alloc(size, 1);
+    t_oken *token = chad_alloc(size, 1, alloc_head);
     info->head = token;
     default_token(token);
     token->token = str_token;
@@ -54,7 +56,7 @@ t_oken *add_token(char *str_token, t_info *info) {
       head_token = head_token->next;
     }
 
-    t_oken *token = chad_alloc(size, 1);
+    t_oken *token = chad_alloc(size, 1, alloc_head);
     default_token(token);
     head_token->next = token;
     token->prev = head_token;
@@ -205,11 +207,10 @@ void print_tokens(t_oken *head_token) {
 int main(void) {
   t_info *info;
   char *line;
-  static t_alloc *alloc_head;
 
   line = ft_strdup("ls -la > hello.txt");
   puts("before alloc >---------------");
-  info = chad_alloc(sizeof(t_info), 1);
+  info = chad_alloc(sizeof(t_info), 1, alloc_head);
   info->head = NULL;
   info->cursor = 0;
 
