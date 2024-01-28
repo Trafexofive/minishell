@@ -77,7 +77,7 @@ t_oken *handle_quote(char *line, t_info *info) {
   int i = info->cursor + 1;
   int end = after_quote(line, info);
   int len = end - info->cursor + 1;
-  str_token = chad_alloc(sizeof(char), len);
+  str_token = chad_alloc(sizeof(char), len, alloc_head);
   str_token[len] = '\0';
   while (str_token[++j]) {
     str_token[j] = line[i];
@@ -128,7 +128,7 @@ int after_word(char *line, t_info *info) {
 }
 
 void handle_operator(char *line, t_info *info) {
-  char *str_token = chad_alloc(1, 2);
+  char *str_token = chad_alloc(1, 2, alloc_head);
   str_token[0] = '|';
   str_token[1] = '\0';
   if (line[info->cursor] == PIPE) {
@@ -162,7 +162,7 @@ void handle_word(char *line, t_info *info) {
   int i = info->cursor + 1;
   int end = after_quote(line, info);
   int len = end - info->cursor + 1;
-  str_token = chad_alloc(sizeof(char), len);
+  str_token = chad_alloc(sizeof(char), len, alloc_head);
   str_token[len] = '\0';
   while (str_token[++j]) {
     str_token[j] = line[i];
@@ -209,9 +209,9 @@ int main(void) {
   char *line;
 
   line = ft_strdup("ls -la > hello.txt");
-  puts("before alloc >---------------");
   info = chad_alloc(sizeof(t_info), 1, alloc_head);
   info->head = NULL;
+  puts("before alloc >---------------");
   info->cursor = 0;
 
   main_loop(line, info);
