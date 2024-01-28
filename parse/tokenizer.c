@@ -2,6 +2,7 @@
 
 #include "../inc/minish.h"
 #include <stdio.h>
+#include <unistd.h>
 
 void print_arr(char **str) {
   int i = -1;
@@ -80,7 +81,8 @@ t_oken *handle_quote(char *line, t_info *info) {
     i++;
   }
   new_token = add_token(str_token, info);
-  info->cursor = end;
+  if (line[info->cursor])
+    info->cursor = end;
   return (new_token);
 }
 

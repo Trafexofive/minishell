@@ -8,6 +8,7 @@
 #include <limits.h>
 // #include <readline/history.h>
 // #include <readline/readline.h>
+#include "garbage.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -23,23 +24,20 @@ typedef struct s_token {
   int quote_type;       // 0 - singleq, 1 - dblquote , -1 not quote in token
 } t_oken;
 
-typedef struct s_alloc {
-  void *address;
-  struct s_alloc *next;
-} t_alloc;
-
+typedef struct s_cmd {
+  struct s_token *tokens;
+} t_cmd;
 typedef struct s_info {
 
   bool in_word;
+  char *line;
   bool debug;
   int cursor;
   bool quote_presence;
   int quote_count;
   int word_start;
   int word_delim;
+  struct s_token *head;
 } t_info;
-
-void *init_prompt(int ac, char **av);
-t_oken **parse(const char *line);
 
 #endif

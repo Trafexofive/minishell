@@ -12,7 +12,7 @@
 
 #define PIPE '|'
 #define AMPERS '&'
-#define AND "&&"
+#define REDIR "<>"
 #define OR "||"
 #define DOLLAR '$'
 
