@@ -135,24 +135,20 @@ void handle_operator(char *line, t_info *info) {
   } else if (line[info->cursor] == '>') {
     if (line[info->cursor++] == '>') {
       char *str_token = ft_strdup(">>");
-      alloc_append_last(str_token);
       add_token(str_token, info);
       info->cursor += 2;
     } else {
       char *str_token = ft_strdup(">");
-      alloc_append_last(str_token);
       add_token(str_token, info);
       info->cursor++;
     }
   } else if (line[info->cursor] == '<') {
     if (line[info->cursor++] == '<') {
       char *str_token = ft_strdup("<<");
-      alloc_append_last(str_token);
       add_token(str_token, info);
       info->cursor += 2;
     } else {
       char *str_token = ft_strdup("<");
-      alloc_append_last(str_token);
       add_token(str_token, info);
       info->cursor++;
     }
@@ -209,6 +205,7 @@ void print_tokens(t_oken *head_token) {
 int main(void) {
   t_info *info;
   char *line;
+  static t_alloc *alloc_head;
 
   line = ft_strdup("ls -la > hello.txt");
   puts("before alloc >---------------");
@@ -218,7 +215,7 @@ int main(void) {
 
   main_loop(line, info);
   print_tokens(info->head);
-  free_all();
+  free_all(alloc_head);
 
   return EXIT_SUCCESS;
 }
