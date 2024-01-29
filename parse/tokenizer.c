@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-static t_alloc *alloc_head = NULL;
-
 void print_arr(char **str) {
   int i = -1;
 
@@ -45,7 +43,7 @@ void default_token(t_oken *head) {
 t_oken *add_token(char *str_token, t_info *info) {
   size_t size = sizeof(t_oken);
   if (info->head == NULL) {
-    t_oken *token = chad_alloc(size, 1, alloc_head);
+    t_oken *token = chad_alloc(size, 1, info->alloc_head);
     info->head = token;
     default_token(token);
     token->token = str_token;
@@ -56,7 +54,7 @@ t_oken *add_token(char *str_token, t_info *info) {
       head_token = head_token->next;
     }
 
-    t_oken *token = chad_alloc(size, 1, alloc_head);
+    t_oken *token = chad_alloc(size, 1, info->alloc_head);
     default_token(token);
     head_token->next = token;
     token->prev = head_token;
@@ -78,7 +76,7 @@ t_oken *handle_quote(char *line, t_info *info) {
   int i = info->cursor + 1;
   int end = after_quote(line, info);
   int len = end - info->cursor + 1;
-  str_token = chad_alloc(sizeof(char), len, alloc_head);
+  str_token = chad_alloc(sizeof(char), len, info->alloc_head);
   str_token[len] = '\0';
   while (str_token[++j]) {
     str_token[j] = line[i];
@@ -131,7 +129,7 @@ int last_char_in_word(char *line, t_info *info) {
 }
 
 void handle_operator(char *line, t_info *info) {
-  char *str_token = chad_alloc(1, 2, alloc_head);
+  char *str_token = chad_alloc(1, 2, info->alloc_head);
   str_token[0] = '|';
   str_token[1] = '\0';
   if (line[info->cursor] == PIPE) {
@@ -166,7 +164,7 @@ void handle_word(char *line, t_info *info) {
   int i = info->cursor;
   int end = last_char_in_word(line, info);
   int len = end - info->cursor + 1;
-  str_token = chad_alloc(sizeof(char), len, alloc_head);
+  str_token = chad_alloc(sizeof(char), len, info->alloc_head);
   while (j < len) {
     str_token[j] = line[i];
     j++;
@@ -214,9 +212,11 @@ void print_tokens(t_oken *head_token) {
 int main(void) {
   t_info *info;
   char *line;
+  t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
 
   line = ft_strdup("ls -la hello.txt");
-  info = ft_calloc(sizeof(t_info), 1);
+  info = ft_calloc(1, sizeof(t_info));
+  info->alloc_head = alloc_head;
   info->head = NULL;
   puts("before main_loop>---------------");
   info->cursor = 0;
@@ -224,7 +224,6 @@ int main(void) {
   main_loop(line, info);
   print_tokens(info->head);
 
-  puts("test");
   free(info);
   free_all(alloc_head);
 

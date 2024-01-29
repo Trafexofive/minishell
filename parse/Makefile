@@ -22,8 +22,6 @@ lib :
 %.o: %.c $(HEADERS) | lib
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-run :
-	./minishell
 push:
 	git add .
 	git commit -m "Lazy_push"
