@@ -223,6 +223,8 @@ int main(void) {
 
   main_loop(line, info);
   print_tokens(info->head);
+
+  puts("test");
   free(info);
   free_all(alloc_head);
 
