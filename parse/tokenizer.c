@@ -60,6 +60,7 @@ t_oken *add_token(char *str_token, t_info *info) {
     default_token(token);
     head_token->next = token;
     token->prev = head_token;
+    token->next = NULL;
     token->token = str_token;
     return (token);
   }
@@ -96,7 +97,6 @@ int keep_track_of_quote(char *line, t_info *info);
 bool check_line(char *line, t_info *info) // for checking early parse errors
 {
   while (line[info->cursor]) {
-    puts("test");
     printf("info cursor==>%d\n", info->cursor);
     printf("line ==> %s\n", line);
     if (!is_space(line[info->cursor]))
@@ -121,10 +121,10 @@ bool is_quote(char c) {
   return FALSE;
 }
 
-int after_word(char *line, t_info *info) {
+int last_char_in_word(char *line, t_info *info) {
   int i = info->cursor;
 
-  while (line[i] && !is_space(line[i]) && !is_quote(line[i]))
+  while (line[i] != '\0' && !is_space(line[i]) && !is_quote(line[i]))
     i++;
   i--;
   return (i);
@@ -159,18 +159,21 @@ void handle_operator(char *line, t_info *info) {
     }
   }
 }
+
 void handle_word(char *line, t_info *info) {
   char *str_token;
-  int j = -1;
-  int i = info->cursor + 1;
-  int end = after_quote(line, info);
+  int j = 0;
+  int i = info->cursor;
+  int end = last_char_in_word(line, info);
   int len = end - info->cursor + 1;
   str_token = chad_alloc(sizeof(char), len, alloc_head);
-  str_token[len] = '\0';
-  while (str_token[++j]) {
+  while (j < len) {
     str_token[j] = line[i];
+    j++;
     i++;
   }
+  str_token[len] = '\0';
+  info->cursor = end + 1;
   add_token(str_token, info);
 }
 
@@ -181,9 +184,10 @@ void handle_dollar(char *line, t_info *info) {
 
 void main_loop(char *line, t_info *info) {
 
+  int len = ft_strlen(line);
   if (check_line(line, info) != FALSE)
     return;
-  while (line[info->cursor]) {
+  while (info->cursor <= len) {
     if (line[info->cursor] == DQUOTE || line[info->cursor] == QUOTE)
       handle_quote(line, info);
     else if (is_operator(line[info->cursor]))
@@ -211,14 +215,15 @@ int main(void) {
   t_info *info;
   char *line;
 
-  line = ft_strdup("ls -la > hello.txt");
-  info = chad_alloc(sizeof(t_info), 1, alloc_head);
+  line = ft_strdup("ls -la hello.txt");
+  info = ft_calloc(sizeof(t_info), 1);
   info->head = NULL;
   puts("before main_loop>---------------");
   info->cursor = 0;
 
   main_loop(line, info);
   print_tokens(info->head);
+  free(info);
   free_all(alloc_head);
 
   return EXIT_SUCCESS;
