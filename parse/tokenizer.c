@@ -2,7 +2,6 @@
 
 #include "../inc/minish.h"
 
-#include <readline/readline.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -20,7 +19,7 @@ void print_arr(char **str) {
 }
 
 bool is_space(char c) {
-  if (c == ' ' || c == '\n' || c == '\t')
+  if (c == ' ' || c == '\t')
     return TRUE;
   return FALSE;
 }
@@ -119,7 +118,8 @@ bool valid_quotes(t_info *info) {
   if (dquote_c % 2 != 0 && dquote_c != 0) {
     puts("invalid quotes");
     parse_error("invalid quotes", info);
-  } else if (quote_c % 2 != 0 && quote_c != 0) {
+  }
+  if (quote_c % 2 != 0 && quote_c != 0) {
     puts("invalid quotes");
     parse_error("invalid quotes", info);
   }
@@ -135,8 +135,7 @@ bool check_line(char *line, t_info *info) // for checking early parse errors
       break;
     info->cursor += 1;
   }
-  fprintf(stderr, "%s", "break\n");
-  return FALSE;
+  return TRUE;
 } // such ar the '=' at the beggining
 // will also return index of the first word occurence
 
@@ -166,13 +165,12 @@ int word_len(t_info *info) {
   int i = info->cursor;
   int j = 0;
 
-  puts("hhhh");
   while (info->line[i] != '\0' && !is_space(info->line[i]) &&
          !is_quote(info->line[i])) {
     i++;
     j++;
   }
-  return (j + 1);
+  return (j);
 }
 void handle_operator(char *line, t_info *info) {
   if (line[info->cursor] == PIPE) {
@@ -217,8 +215,8 @@ void handle_word(char *line, t_info *info) {
     i++;
   }
   str_token[len] = '\0';
-  printf(" word str token ==> %s\n", str_token);
-  info->cursor = i + 1;
+  // printf(" word str token ==> %s\n", str_token);
+  info->cursor = i;
   add_token(str_token, info);
 }
 
@@ -231,15 +229,12 @@ t_info *main_loop(char *line, t_info *info) {
 
   if (!check_line(line, info))
     return NULL;
-  printf("first char index %d", info->cursor);
   while (line[info->cursor]) {
     if (line[info->cursor] == DQUOTE || line[info->cursor] == QUOTE)
       handle_quote(line, info);
     else if (is_operator(line[info->cursor]))
       handle_operator(line, info);
-    else if (ft_isascii(line[info->cursor])) {
-      printf("info cursor==>%d\n", info->cursor);
-
+    else if (ft_isprint(line[info->cursor]) && !is_space(line[info->cursor])) {
       handle_word(line, info);
     } else if (line[info->cursor] == '$')
       handle_dollar(line, info);
@@ -248,6 +243,7 @@ t_info *main_loop(char *line, t_info *info) {
 
     info->cursor++;
   }
+  fprintf(stderr, "%s", "break\n");
   return (info);
 }
 
@@ -270,7 +266,7 @@ int main(void) {
   char *line;
   t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
 
-  line = readline("Lbroshell==>");
+  line = ft_strdup("   ls -la > |    test   >>");
   info = ft_calloc(1, sizeof(t_info));
   info->line = line;
   info->alloc_head = alloc_head;

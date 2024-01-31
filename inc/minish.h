@@ -7,8 +7,8 @@
 #include "garbage.h"
 #include "macros.h"
 #include <limits.h>
-#include <readline/history.h>
-#include <readline/readline.h>
+// #include <readline/history.h>
+// #include <readline/readline.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
