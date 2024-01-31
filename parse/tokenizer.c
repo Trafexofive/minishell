@@ -6,6 +6,12 @@
 #include <stdio.h>
 #include <unistd.h>
 
+void parse_error(const char *exit_msg, t_info *info) {
+  printf("%s\n", exit_msg);
+  free_all(info->alloc_head);
+  exit(1);
+}
+
 void print_arr(char **str) {
   int i = -1;
 
@@ -98,7 +104,7 @@ t_oken *handle_quote(char *line, t_info *info) {
 
 int keep_track_of_quote(char *line, t_info *info);
 
-bool invalid_quotes(t_info *info) {
+bool valid_quotes(t_info *info) {
   char *line = info->line;
   int i = 0;
   int quote_c = 0;
@@ -110,11 +116,21 @@ bool invalid_quotes(t_info *info) {
       quote_c++;
     i++;
   }
+  if (dquote_c % 2 != 0) {
+    puts("invalid quotes");
+    parse_error("invalid quotes", info);
+  } else if (dquote_c % 2 != 0) {
+    puts("invalid quotes");
+    parse_error("invalid quotes", info);
+  }
+  return TRUE;
 }
 
 bool check_line(char *line, t_info *info) // for checking early parse errors
 {
   printf("line ==> %s\n", line);
+  if (!valid_quotes(info))
+    return FALSE;
   while (line[info->cursor]) {
     if (!is_space(line[info->cursor]))
       break;
