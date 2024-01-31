@@ -116,10 +116,10 @@ bool valid_quotes(t_info *info) {
       quote_c++;
     i++;
   }
-  if (dquote_c % 2 != 0) {
+  if (dquote_c % 2 != 0 && dquote_c != 0) {
     puts("invalid quotes");
     parse_error("invalid quotes", info);
-  } else if (dquote_c % 2 != 0) {
+  } else if (quote_c % 2 != 0 && quote_c != 0) {
     puts("invalid quotes");
     parse_error("invalid quotes", info);
   }
@@ -128,7 +128,6 @@ bool valid_quotes(t_info *info) {
 
 bool check_line(char *line, t_info *info) // for checking early parse errors
 {
-  printf("line ==> %s\n", line);
   if (!valid_quotes(info))
     return FALSE;
   while (line[info->cursor]) {
@@ -136,10 +135,9 @@ bool check_line(char *line, t_info *info) // for checking early parse errors
       break;
     info->cursor += 1;
   }
-  printf("info cursor==>%d\n", info->cursor);
+  fprintf(stderr, "%s", "break\n");
   return FALSE;
-}
-// such ar the '=' at the beggining
+} // such ar the '=' at the beggining
 // will also return index of the first word occurence
 
 // maybe for operators tokenize everything (word + op + word)
@@ -164,6 +162,18 @@ int last_char_in_word(char *line, t_info *info) {
   return (i);
 }
 
+int word_len(t_info *info) {
+  int i = info->cursor;
+  int j = 0;
+
+  puts("hhhh");
+  while (info->line[i] != '\0' && !is_space(info->line[i]) &&
+         !is_quote(info->line[i])) {
+    i++;
+    j++;
+  }
+  return (j + 1);
+}
 void handle_operator(char *line, t_info *info) {
   if (line[info->cursor] == PIPE) {
     char *str_token = chad_alloc(1, 2, info->alloc_head);
@@ -198,16 +208,17 @@ void handle_word(char *line, t_info *info) {
   char *str_token;
   int j = 0;
   int i = info->cursor;
-  int end = last_char_in_word(line, info);
-  int len = end - info->cursor + 1;
+  int len = word_len(info);
+  printf("word len ==> %d\n", len);
   str_token = chad_alloc(sizeof(char), len, info->alloc_head);
-  while (j <= len) {
+  while (j < len) {
     str_token[j] = line[i];
     j++;
     i++;
   }
   str_token[len] = '\0';
-  info->cursor = end + 1;
+  printf(" word str token ==> %s\n", str_token);
+  info->cursor = i + 1;
   add_token(str_token, info);
 }
 
@@ -218,18 +229,19 @@ void handle_dollar(char *line, t_info *info) {
 
 t_info *main_loop(char *line, t_info *info) {
 
-  int len = ft_strlen(line);
-  if (check_line(line, info) != FALSE)
+  if (!check_line(line, info))
     return NULL;
-  while (info->cursor <= len) {
-    puts("in main loop");
+  printf("first char index %d", info->cursor);
+  while (line[info->cursor]) {
     if (line[info->cursor] == DQUOTE || line[info->cursor] == QUOTE)
       handle_quote(line, info);
     else if (is_operator(line[info->cursor]))
       handle_operator(line, info);
-    else if (ft_isascii(line[info->cursor]))
+    else if (ft_isascii(line[info->cursor])) {
+      printf("info cursor==>%d\n", info->cursor);
+
       handle_word(line, info);
-    else if (line[info->cursor] == '$')
+    } else if (line[info->cursor] == '$')
       handle_dollar(line, info);
     if (!line[info->cursor])
       break;
@@ -243,9 +255,13 @@ bool is_in(char c, const char *str);
 
 void print_tokens(t_oken *head_token) {
   t_oken *ptr = head_token;
-  while (ptr->next != NULL) {
+  if (ptr->next == NULL)
     printf("token => %s   \n", ptr->token);
-    ptr = ptr->next;
+  else {
+    while (ptr->next != NULL) {
+      printf("token => %s   \n", ptr->token);
+      ptr = ptr->next;
+    }
   }
 }
 
@@ -259,7 +275,6 @@ int main(void) {
   info->line = line;
   info->alloc_head = alloc_head;
   info->head = NULL;
-  puts("before main_loop>---------------");
   info->cursor = 0;
 
   add_address(line, alloc_head);

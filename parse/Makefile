@@ -3,7 +3,7 @@ CC := cc
 
 NAME	:= minishell
 
-CFLAGS	:= -Wextra -Wall -Werror 
+CFLAGS	:= -Wextra -Wall -Werror #-fsanitize=address
 
 SRCS	:= tokenizer.c garbage.c
 
