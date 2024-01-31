@@ -180,11 +180,11 @@ void handle_dollar(char *line, t_info *info) {
   return;
 }
 
-void main_loop(char *line, t_info *info) {
+t_info *main_loop(char *line, t_info *info) {
 
   int len = ft_strlen(line);
   if (check_line(line, info) != FALSE)
-    return;
+    return NULL;
   while (info->cursor <= len) {
     if (line[info->cursor] == DQUOTE || line[info->cursor] == QUOTE)
       handle_quote(line, info);
@@ -197,6 +197,7 @@ void main_loop(char *line, t_info *info) {
 
     info->cursor++;
   }
+  return (info);
 }
 
 bool is_in(char c, const char *str);
@@ -204,7 +205,7 @@ bool is_in(char c, const char *str);
 void print_tokens(t_oken *head_token) {
   t_oken *ptr = head_token;
   while (ptr->next != NULL) {
-    printf("token => %s |\n", ptr->token);
+    printf("token => %s | \n", ptr->token);
     ptr = ptr->next;
   }
 }
@@ -215,12 +216,14 @@ int main(void) {
   t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
 
   line = ft_strdup("ls -la hello.txt");
+  info->line = line;
   info = ft_calloc(1, sizeof(t_info));
   info->alloc_head = alloc_head;
   info->head = NULL;
   puts("before main_loop>---------------");
   info->cursor = 0;
 
+  add_address(line, alloc_head);
   main_loop(line, info);
   print_tokens(info->head);
 
