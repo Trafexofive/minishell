@@ -98,6 +98,20 @@ t_oken *handle_quote(char *line, t_info *info) {
 
 int keep_track_of_quote(char *line, t_info *info);
 
+bool invalid_quotes(t_info *info) {
+  char *line = info->line;
+  int i = 0;
+  int quote_c = 0;
+  int dquote_c = 0;
+  while (line[i]) {
+    if (line[i] == DQUOTE)
+      dquote_c++;
+    if (line[i] == DQUOTE)
+      quote_c++;
+    i++;
+  }
+}
+
 bool check_line(char *line, t_info *info) // for checking early parse errors
 {
   printf("line ==> %s\n", line);
