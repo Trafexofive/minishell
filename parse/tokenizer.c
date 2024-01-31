@@ -2,6 +2,7 @@
 
 #include "../inc/minish.h"
 
+#include <readline/readline.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -94,13 +95,13 @@ int keep_track_of_quote(char *line, t_info *info);
 
 bool check_line(char *line, t_info *info) // for checking early parse errors
 {
+  printf("line ==> %s\n", line);
   while (line[info->cursor]) {
-    printf("info cursor==>%d\n", info->cursor);
-    printf("line ==> %s\n", line);
     if (!is_space(line[info->cursor]))
       break;
-    info->cursor++;
+    info->cursor += 1;
   }
+  printf("info cursor==>%d\n", info->cursor);
   return FALSE;
 }
 // such ar the '=' at the beggining
@@ -129,31 +130,29 @@ int last_char_in_word(char *line, t_info *info) {
 }
 
 void handle_operator(char *line, t_info *info) {
-  char *str_token = chad_alloc(1, 2, info->alloc_head);
-  str_token[0] = '|';
-  str_token[1] = '\0';
   if (line[info->cursor] == PIPE) {
+    char *str_token = chad_alloc(1, 2, info->alloc_head);
+    str_token[0] = '|';
+    str_token[1] = '\0';
     add_token(str_token, info);
     info->cursor++;
   } else if (line[info->cursor] == '>') {
-    if (line[info->cursor++] == '>') {
+    if ((line[info->cursor + 1]) == '>') {
       char *str_token = ft_strdup(">>");
       add_token(str_token, info);
-      info->cursor += 2;
+      info->cursor += 1;
     } else {
       char *str_token = ft_strdup(">");
       add_token(str_token, info);
-      info->cursor++;
     }
   } else if (line[info->cursor] == '<') {
     if (line[info->cursor++] == '<') {
       char *str_token = ft_strdup("<<");
       add_token(str_token, info);
-      info->cursor += 2;
+      info->cursor += 1;
     } else {
       char *str_token = ft_strdup("<");
       add_token(str_token, info);
-      info->cursor++;
     }
   }
 }
@@ -205,7 +204,7 @@ bool is_in(char c, const char *str);
 void print_tokens(t_oken *head_token) {
   t_oken *ptr = head_token;
   while (ptr->next != NULL) {
-    printf("token => %s | \n", ptr->token);
+    printf("token => %s   \n", ptr->token);
     ptr = ptr->next;
   }
 }
@@ -215,9 +214,9 @@ int main(void) {
   char *line;
   t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
 
-  line = ft_strdup("ls -la hello.txt");
-  info->line = line;
+  line = readline("Lbroshell==>");
   info = ft_calloc(1, sizeof(t_info));
+  info->line = line;
   info->alloc_head = alloc_head;
   info->head = NULL;
   puts("before main_loop>---------------");

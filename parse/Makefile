@@ -14,7 +14,7 @@ OBJS	:= ${SRCS:.c=.o}
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME) #-lreadline
+	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME)  -lreadline
 
 lib : 
 	@make -C ../libft

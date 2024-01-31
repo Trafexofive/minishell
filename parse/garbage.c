@@ -44,5 +44,7 @@ void free_all(t_alloc *head) {
     free(head->address);
     free(head->alloc_node);
     head = head->next;
+    puts("otera");
+    ;
   }
 }
