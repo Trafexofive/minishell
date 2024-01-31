@@ -89,7 +89,7 @@ t_oken *handle_quote(char *line, t_info *info) {
   str_token[len] = '\0';
   printf(" str_token ==> |%s|\n", str_token);
   new_token = add_token(str_token, info);
-  info->cursor += len - 1;
+  info->cursor += len;
   printf(" after quote cursor %d\n", info->cursor);
   return (new_token);
 }
@@ -145,19 +145,21 @@ void handle_operator(char *line, t_info *info) {
     if ((line[info->cursor + 1]) == '>') {
       char *str_token = ft_strdup(">>");
       add_token(str_token, info);
-      info->cursor += 1;
+      info->cursor += 2;
     } else {
       char *str_token = ft_strdup(">");
       add_token(str_token, info);
+      info->cursor += 1;
     }
   } else if (line[info->cursor] == '<') {
-    if (line[info->cursor++] == '<') {
+    if (line[info->cursor + 1] == '<') {
       char *str_token = ft_strdup("<<");
       add_token(str_token, info);
-      info->cursor += 1;
+      info->cursor += 2;
     } else {
       char *str_token = ft_strdup("<");
       add_token(str_token, info);
+      info->cursor += 1;
     }
   }
 }
@@ -199,6 +201,8 @@ t_info *main_loop(char *line, t_info *info) {
       handle_word(line, info);
     else if (line[info->cursor] == '$')
       handle_dollar(line, info);
+    if (!line[info->cursor])
+      break;
 
     info->cursor++;
   }
