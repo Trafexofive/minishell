@@ -258,6 +258,7 @@ void print_tokens(t_oken *head_token) {
       printf("token => %s   \n", ptr->token);
       ptr = ptr->next;
     }
+    printf("token => %s   \n", ptr->token);
   }
 }
 
@@ -266,7 +267,7 @@ int main(void) {
   char *line;
   t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
 
-  line = ft_strdup("   ls -la > |    test   >>");
+  line = ft_strdup("   ls -la > |    test   >> |   j ");
   info = ft_calloc(1, sizeof(t_info));
   info->line = line;
   info->alloc_head = alloc_head;
