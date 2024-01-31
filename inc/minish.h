@@ -29,7 +29,7 @@ typedef struct s_cmd {
 } t_cmd;
 typedef struct s_info {
 
-  bool in_word;
+  t_alloc *alloc_head;
   char *line;
   bool debug;
   int cursor;
