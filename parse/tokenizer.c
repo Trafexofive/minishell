@@ -18,16 +18,6 @@ bool is_space(char c) {
     return TRUE;
   return FALSE;
 }
-int after_quote(char *line, t_info *info) {
-  int i = info->cursor;
-  while (line[i]) {
-    if (line[i] == DQUOTE || line[i] == QUOTE)
-      return i;
-    i++;
-  }
-  return -1;
-}
-
 t_oken **parse(const char *line);
 
 void default_token(t_oken *head) {
@@ -68,24 +58,39 @@ t_oken *add_token(char *str_token, t_info *info) {
 // syntax checking
 void check_syntax(t_oken **tokens);
 
+int quote_len(char *line, t_info *info) {
+  int i = info->cursor;
+  int j = 0;
+  while (line[i]) {
+    if (line[i] == 34 || line[i] == 39)
+      return j;
+    i++;
+    j++;
+  }
+  return -1;
+}
+
 // tokenizing words and operators
 t_oken *handle_quote(char *line, t_info *info) {
   // handling quotes by taking everything inside them regardless;
+  // update quote type
   char *str_token;
   t_oken *new_token;
-  int j = -1;
-  int i = info->cursor + 1;
-  int end = after_quote(line, info);
-  int len = end - info->cursor + 1;
+  int j = 0;
+  info->cursor += 1;
+  int i = info->cursor;
+  int len = quote_len(line, info) + 1;
   str_token = chad_alloc(sizeof(char), len, info->alloc_head);
-  str_token[len] = '\0';
-  while (str_token[++j]) {
+  while (i < len) {
     str_token[j] = line[i];
+    j++;
     i++;
   }
+  str_token[len] = '\0';
+  printf(" str_token ==> |%s|\n", str_token);
   new_token = add_token(str_token, info);
-  if (line[info->cursor])
-    info->cursor = end;
+  info->cursor += len - 1;
+  printf(" after quote cursor %d\n", info->cursor);
   return (new_token);
 }
 
@@ -164,7 +169,7 @@ void handle_word(char *line, t_info *info) {
   int end = last_char_in_word(line, info);
   int len = end - info->cursor + 1;
   str_token = chad_alloc(sizeof(char), len, info->alloc_head);
-  while (j < len) {
+  while (j <= len) {
     str_token[j] = line[i];
     j++;
     i++;
@@ -185,6 +190,7 @@ t_info *main_loop(char *line, t_info *info) {
   if (check_line(line, info) != FALSE)
     return NULL;
   while (info->cursor <= len) {
+    puts("in main loop");
     if (line[info->cursor] == DQUOTE || line[info->cursor] == QUOTE)
       handle_quote(line, info);
     else if (is_operator(line[info->cursor]))
