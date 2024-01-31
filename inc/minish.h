@@ -4,11 +4,11 @@
 #define MINISH_H
 
 #include "../libft/libft.h"
+#include "garbage.h"
 #include "macros.h"
 #include <limits.h>
-// #include <readline/history.h>
-// #include <readline/readline.h>
-#include "garbage.h"
+#include <readline/history.h>
+#include <readline/readline.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
