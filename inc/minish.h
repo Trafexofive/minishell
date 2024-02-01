@@ -13,6 +13,17 @@
 #include <stdio.h>
 #include <unistd.h>
 
+// typedef enum s_cmd_type
+// {
+// 	WORD = 1;
+// 	PIPE = 2;
+// 	AMPERS = 3;
+// 	REDIR = 4;
+// 	OR = 5;
+// 	DOLLAR = 6;
+
+// } t_cmd_type;
+
 typedef struct s_token {
   int data_type;
   char *token;
@@ -24,9 +35,24 @@ typedef struct s_token {
   int quote_type;       // 0 - singleq, 1 - dblquote , -1 not quote in token
 } t_oken;
 
+typedef struct s_lex {
+  bool flag;
+} t_lex;
+
 typedef struct s_cmd {
   struct s_token *tokens;
+  char *cmd;
+  struct s_cmd *next;
+  struct s_cmd *prev;
+  int	builtin;
+  int type;
+  int status;
+  int pid;
+  int cmd_fd[2];
+  int fd_in;
+  int fd_out;
 } t_cmd;
+
 typedef struct s_info {
 
   t_alloc *alloc_head;
@@ -34,9 +60,6 @@ typedef struct s_info {
   bool debug;
   int cursor;
   bool quote_presence;
-  int quote_count;
-  int word_start;
-  int word_delim;
   struct s_token *head;
 } t_info;
 
