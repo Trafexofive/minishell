@@ -5,7 +5,7 @@ NAME	:= minishell
 
 CFLAGS	:= -Wextra -Wall -Werror #-fsanitize=address
 
-SRCS	:= tokenizer.c garbage.c utils.c
+SRCS	:= tokenizer.c garbage.c utils.c lexer.c
 
 LIBFT := ../libft/libft.a
 

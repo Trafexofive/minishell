@@ -135,7 +135,7 @@ void	print_tokens(t_oken *head_token)
 	t_oken *ptr = head_token;
 		while (ptr->next != NULL)
 		{
-			printf("token =>%s -- quote value =>%d -- type =>%s\n", ptr->token, ptr->quote_type, translate(ptr->data_type));
+			printf("token :%s--quote value =>%d--type =>%s \n", ptr->token, ptr->quote_type, translate(ptr->data_type));
 			ptr = ptr->next;
 		}
 		printf("token => %s", ptr->token);

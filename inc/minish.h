@@ -29,7 +29,7 @@ typedef struct s_token {
   char *token;
   struct s_token *next;
   struct s_token *prev;
-  bool is_dollar;
+  bool dollar_presence;
   char *expanded_token; // good idea but expanding should be after the parser is
                         // done
   int quote_type;       // 0 - singleq, 1 - dblquote , -1 not quote in token
@@ -41,14 +41,12 @@ typedef struct s_lex {
 
 typedef struct s_cmd {
   struct s_token *tokens;
-  char *cmd;
+  char **cmd;
   struct s_cmd *next;
   struct s_cmd *prev;
   int	builtin;
-  int type;
   int status;
   int pid;
-  int cmd_fd[2];
   int fd_in;
   int fd_out;
 } t_cmd;
@@ -56,6 +54,7 @@ typedef struct s_cmd {
 typedef struct s_info {
 
   t_alloc *alloc_head;
+  t_cmd *cmd;
   char *line;
   bool debug;
   int cursor;
@@ -73,12 +72,15 @@ bool	is_quote(char c);
 int	last_char_in_word(char *line, t_info *info);
 void	print_tokens(t_oken *head);
 void	handle_operator(char *line, t_info *info);
-void	handle_word(char *line, t_info *info);
+t_oken *handle_word(char *line, t_info *info);
 void	handle_dollar(char *line, t_info *info);
 t_info	*main_loop(char *line, t_info *info);
 bool	check_line(char *line, t_info *info);
 int	word_len(t_info *info);
 bool	valid_quotes(t_info *info);
 bool	is_operator(char c);
+t_cmd *lexer(t_info *info);
+bool	is_op(int op);
+
 
 #endif
