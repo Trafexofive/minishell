@@ -62,10 +62,12 @@ t_oken *handle_quote(char *line, t_info *info) {
     i++;
   }
   str_token[len] = '\0';
-  printf(" str_token ==> |%s|\n", str_token);
   new_token = add_token(str_token, info);
+  if (line[info->cursor - 1] == DQUOTE)
+	new_token->quote_type = 1;
+  else
+	new_token->quote_type = 0;
   info->cursor += len;
-  printf(" after quote cursor %d\n", info->cursor);
   return (new_token);
 }
 
@@ -89,34 +91,40 @@ bool check_line(char *line, t_info *info) // for checking early parse errors
 // maybe for operators tokenize everything (word + op + word)
 
 void handle_operator(char *line, t_info *info) {
+	t_oken *new_token;
   if (line[info->cursor] == PIPE) {
     char *str_token = chad_alloc(1, 2, info->alloc_head);
     str_token[0] = '|';
     str_token[1] = '\0';
-    add_token(str_token, info);
+    new_token = add_token(str_token, info);
+	new_token->data_type = 5;
     info->cursor++;
   } else if (line[info->cursor] == '>') {
     if ((line[info->cursor + 1]) == '>') {
       char *str_token = ft_strdup(">>");
 	  add_address(str_token, info->alloc_head);
-      add_token(str_token, info);
+      new_token = add_token(str_token, info);
+	  new_token->data_type = 4;
       info->cursor += 2;
     } else {
       char *str_token = ft_strdup(">");
 	  add_address(str_token, info->alloc_head);
-      add_token(str_token, info);
+      new_token = add_token(str_token, info);
+	  new_token->data_type = 2;
       info->cursor += 1;
     }
   } else if (line[info->cursor] == '<') {
     if (line[info->cursor + 1] == '<') {
       char *str_token = ft_strdup("<<");
 	  add_address(str_token, info->alloc_head);
-      add_token(str_token, info);
+      new_token = add_token(str_token, info);
+	  new_token->data_type = 3;
       info->cursor += 2;
     } else {
       char *str_token = ft_strdup("<");
 	  add_address(str_token, info->alloc_head);
-      add_token(str_token, info);
+      new_token = add_token(str_token, info);
+	  new_token->data_type = 1;
       info->cursor += 1;
     }
   }
@@ -124,6 +132,7 @@ void handle_operator(char *line, t_info *info) {
 
 void handle_word(char *line, t_info *info) {
   char *str_token;
+  t_oken *new_token;
   int j = 0;
   int i = info->cursor;
   int len = word_len(info);
@@ -135,9 +144,9 @@ void handle_word(char *line, t_info *info) {
     i++;
   }
   str_token[len] = '\0';
-//   printf(" word str token ==> %s\n", str_token);
   info->cursor = i;
-  add_token(str_token, info);
+  new_token =add_token(str_token, info);
+	  new_token->data_type = 6;
 }
 
 void handle_dollar(char *line, t_info *info) {

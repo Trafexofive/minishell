@@ -113,12 +113,29 @@ bool	valid_quotes(t_info *info)
 	return (TRUE);
 }
 
+const char *translate(int c)
+{
+	if (c == 1)
+		return ("REDIR_IN");
+	if (c == 2)
+		return ("REDIR_OUT");
+	if (c == 3)
+		return ("heredoc");
+	if (c == 4)
+		return ("herestring");
+	if (c == 5)
+		return ("PIPE");	
+	if (c == 6)	
+		return ("WORD");
+	return NULL;
+}
+
 void	print_tokens(t_oken *head_token)
 {
 	t_oken *ptr = head_token;
 		while (ptr->next != NULL)
 		{
-			printf("token => %s\n", ptr->token);
+			printf("token =>%s -- quote value =>%d -- type =>%s\n", ptr->token, ptr->quote_type, translate(ptr->data_type));
 			ptr = ptr->next;
 		}
 		printf("token => %s", ptr->token);

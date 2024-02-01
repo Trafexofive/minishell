@@ -2,6 +2,7 @@
 
 #include "../inc/minish.h"
 
+
 bool	is_op(int op)
 {
 	if (op == PIPE || op == REDIR_OUT || op == REDIR_IN)
