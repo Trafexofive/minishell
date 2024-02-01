@@ -38,6 +38,7 @@ void default_token(t_oken *head) {
 // allocate for the token outside
 t_oken *add_token(char *str_token, t_info *info) {
   size_t size = sizeof(t_oken);
+  t_alloc *iter = info->alloc_head;
   if (info->head == NULL) {
     t_oken *token = chad_alloc(size, 1, info->alloc_head);
     info->head = token;
@@ -46,10 +47,9 @@ t_oken *add_token(char *str_token, t_info *info) {
     return (token);
   } else {
     t_oken *head_token = info->head;
-    while (head_token->next != NULL) {
-      head_token = head_token->next;
+    while (iter->next != NULL) {
+      iter = iter->next;
     }
-
     t_oken *token = chad_alloc(size, 1, info->alloc_head);
     default_token(token);
     head_token->next = token;
@@ -182,20 +182,24 @@ void handle_operator(char *line, t_info *info) {
   } else if (line[info->cursor] == '>') {
     if ((line[info->cursor + 1]) == '>') {
       char *str_token = ft_strdup(">>");
+	  add_address(str_token, info->alloc_head);
       add_token(str_token, info);
       info->cursor += 2;
     } else {
       char *str_token = ft_strdup(">");
+	  add_address(str_token, info->alloc_head);
       add_token(str_token, info);
       info->cursor += 1;
     }
   } else if (line[info->cursor] == '<') {
     if (line[info->cursor + 1] == '<') {
       char *str_token = ft_strdup("<<");
+	  add_address(str_token, info->alloc_head);
       add_token(str_token, info);
       info->cursor += 2;
     } else {
       char *str_token = ft_strdup("<");
+	  add_address(str_token, info->alloc_head);
       add_token(str_token, info);
       info->cursor += 1;
     }
@@ -252,33 +256,40 @@ bool is_in(char c, const char *str);
 void print_tokens(t_oken *head_token) {
   t_oken *ptr = head_token;
   if (ptr->next == NULL)
-    printf("token => %s   \n", ptr->token);
+    printf("token => %s\n", ptr->token);
   else {
     while (ptr->next != NULL) {
-      printf("token => %s   \n", ptr->token);
+      printf("token => %s\n", ptr->token);
       ptr = ptr->next;
     }
-    printf("token => %s   \n", ptr->token);
+    printf("token => %s", ptr->token);
   }
 }
+
+// t_cmd *lexer(t_info *info)
+// {
+
+// }
+
 
 int main(void) {
   t_info *info;
   char *line;
   t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
 
-  line = ft_strdup("   ls -la > |    test   >> |   j ");
+  alloc_head->next = NULL;
   info = ft_calloc(1, sizeof(t_info));
+  alloc_head->address = info;
+  line = ft_strdup("ls -la | grep a | tr a b | cat -e");
   info->line = line;
   info->alloc_head = alloc_head;
   info->head = NULL;
   info->cursor = 0;
 
-  add_address(line, alloc_head);
+//   add_address(line, alloc_head);
   main_loop(line, info);
   print_tokens(info->head);
-
-  free(info);
+	free(line);
   free_all(alloc_head);
 
   return EXIT_SUCCESS;

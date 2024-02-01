@@ -4,10 +4,12 @@
 #include <stdio.h>
 
 void add_address(void *address, t_alloc *head) {
-  while (head->next != NULL)
-    head = head->next;
+	t_alloc *iter = head;
+  while (iter->next != NULL) {
+	iter = iter->next;
+  }
   t_alloc *new_alloc_node = ft_calloc(1, sizeof(t_alloc));
-  head->next = new_alloc_node;
+  iter->next = new_alloc_node;
   new_alloc_node->address = address;
   new_alloc_node->alloc_node = new_alloc_node;
   new_alloc_node->next = NULL;
@@ -15,6 +17,7 @@ void add_address(void *address, t_alloc *head) {
 
 void *chad_alloc(size_t size, int quantity, t_alloc *first_adress) {
   void *alloc_ptr;
+  t_alloc *iter = first_adress;
 
   alloc_ptr = malloc(size * quantity);
   if (!alloc_ptr)
@@ -26,13 +29,13 @@ void *chad_alloc(size_t size, int quantity, t_alloc *first_adress) {
     first_adress->address = alloc_ptr;
     first_adress->next = NULL;
   } else {
-    while (first_adress->next != NULL) {
-      first_adress = first_adress->next;
+    while (iter->next != NULL) {
+      iter = iter->next;
     }
+	// puts("adding address");
     t_alloc *new_alloc_node = ft_calloc(1, sizeof(t_alloc));
     new_alloc_node->alloc_node = new_alloc_node;
-    new_alloc_node = first_adress;
-    first_adress->next = new_alloc_node;
+    iter->next = new_alloc_node;
     new_alloc_node->address = alloc_ptr;
     new_alloc_node->next = NULL;
   }
@@ -44,6 +47,8 @@ void free_all(t_alloc *head) {
     free(head->address);
     free(head->alloc_node);
     head = head->next;
-    ;
+	// puts("freeing");
   }
+    free(head->address);
+    free(head->alloc_node);
 }
