@@ -44,7 +44,6 @@ typedef struct s_cmd {
   char **cmd;
   struct s_cmd *next;
   struct s_cmd *prev;
-  int	builtin;
   int status;
   int pid;
   int fd_in;
