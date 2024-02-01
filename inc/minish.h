@@ -63,4 +63,22 @@ typedef struct s_info {
   struct s_token *head;
 } t_info;
 
+
+void	parse_error(const char *exit_msg, t_info *info);
+void	print_arr(char **str);
+bool	is_space(char c);
+int	quote_len(char *line, t_info *info);
+bool	is_operator(char c);
+bool	is_quote(char c);
+int	last_char_in_word(char *line, t_info *info);
+void	print_tokens(t_oken *head);
+void	handle_operator(char *line, t_info *info);
+void	handle_word(char *line, t_info *info);
+void	handle_dollar(char *line, t_info *info);
+t_info	*main_loop(char *line, t_info *info);
+bool	check_line(char *line, t_info *info);
+int	word_len(t_info *info);
+bool	valid_quotes(t_info *info);
+bool	is_operator(char c);
+
 #endif

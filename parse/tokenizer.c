@@ -2,27 +2,8 @@
 
 #include "../inc/minish.h"
 
-#include <stdio.h>
-#include <unistd.h>
 
-void parse_error(const char *exit_msg, t_info *info) {
-  printf("%s\n", exit_msg);
-  free_all(info->alloc_head);
-  exit(1);
-}
 
-void print_arr(char **str) {
-  int i = -1;
-
-  while (str[++i])
-    printf("%s\n", str[i]);
-}
-
-bool is_space(char c) {
-  if (c == ' ' || c == '\t')
-    return TRUE;
-  return FALSE;
-}
 t_oken **parse(const char *line);
 
 void default_token(t_oken *head) {
@@ -38,7 +19,7 @@ void default_token(t_oken *head) {
 // allocate for the token outside
 t_oken *add_token(char *str_token, t_info *info) {
   size_t size = sizeof(t_oken);
-  t_alloc *iter = info->alloc_head;
+  t_oken  *iter = info->head;
   if (info->head == NULL) {
     t_oken *token = chad_alloc(size, 1, info->alloc_head);
     info->head = token;
@@ -46,14 +27,13 @@ t_oken *add_token(char *str_token, t_info *info) {
     token->token = str_token;
     return (token);
   } else {
-    t_oken *head_token = info->head;
     while (iter->next != NULL) {
       iter = iter->next;
     }
     t_oken *token = chad_alloc(size, 1, info->alloc_head);
     default_token(token);
-    head_token->next = token;
-    token->prev = head_token;
+    iter->next = token;
+    token->prev = iter;
     token->next = NULL;
     token->token = str_token;
     return (token);
@@ -63,17 +43,7 @@ t_oken *add_token(char *str_token, t_info *info) {
 // syntax checking
 void check_syntax(t_oken **tokens);
 
-int quote_len(char *line, t_info *info) {
-  int i = info->cursor;
-  int j = 0;
-  while (line[i]) {
-    if (line[i] == 34 || line[i] == 39)
-      return j;
-    i++;
-    j++;
-  }
-  return -1;
-}
+
 
 // tokenizing words and operators
 t_oken *handle_quote(char *line, t_info *info) {
@@ -103,29 +73,6 @@ t_oken *handle_quote(char *line, t_info *info) {
 
 int keep_track_of_quote(char *line, t_info *info);
 
-bool valid_quotes(t_info *info) {
-  char *line = info->line;
-  int i = 0;
-  int quote_c = 0;
-  int dquote_c = 0;
-  while (line[i]) {
-    if (line[i] == DQUOTE)
-      dquote_c++;
-    if (line[i] == DQUOTE)
-      quote_c++;
-    i++;
-  }
-  if (dquote_c % 2 != 0 && dquote_c != 0) {
-    puts("invalid quotes");
-    parse_error("invalid quotes", info);
-  }
-  if (quote_c % 2 != 0 && quote_c != 0) {
-    puts("invalid quotes");
-    parse_error("invalid quotes", info);
-  }
-  return TRUE;
-}
-
 bool check_line(char *line, t_info *info) // for checking early parse errors
 {
   if (!valid_quotes(info))
@@ -140,38 +87,7 @@ bool check_line(char *line, t_info *info) // for checking early parse errors
 // will also return index of the first word occurence
 
 // maybe for operators tokenize everything (word + op + word)
-bool is_operator(char c) {
-  if (c == PIPE || c == '>' || c == '<')
-    return TRUE;
-  return FALSE;
-}
 
-bool is_quote(char c) {
-  if (c == DQUOTE || c == QUOTE)
-    return TRUE;
-  return FALSE;
-}
-
-int last_char_in_word(char *line, t_info *info) {
-  int i = info->cursor;
-
-  while (line[i] != '\0' && !is_space(line[i]) && !is_quote(line[i]))
-    i++;
-  i--;
-  return (i);
-}
-
-int word_len(t_info *info) {
-  int i = info->cursor;
-  int j = 0;
-
-  while (info->line[i] != '\0' && !is_space(info->line[i]) &&
-         !is_quote(info->line[i])) {
-    i++;
-    j++;
-  }
-  return (j);
-}
 void handle_operator(char *line, t_info *info) {
   if (line[info->cursor] == PIPE) {
     char *str_token = chad_alloc(1, 2, info->alloc_head);
@@ -219,7 +135,7 @@ void handle_word(char *line, t_info *info) {
     i++;
   }
   str_token[len] = '\0';
-  // printf(" word str token ==> %s\n", str_token);
+//   printf(" word str token ==> %s\n", str_token);
   info->cursor = i;
   add_token(str_token, info);
 }
@@ -253,18 +169,7 @@ t_info *main_loop(char *line, t_info *info) {
 
 bool is_in(char c, const char *str);
 
-void print_tokens(t_oken *head_token) {
-  t_oken *ptr = head_token;
-  if (ptr->next == NULL)
-    printf("token => %s\n", ptr->token);
-  else {
-    while (ptr->next != NULL) {
-      printf("token => %s\n", ptr->token);
-      ptr = ptr->next;
-    }
-    printf("token => %s", ptr->token);
-  }
-}
+
 
 // t_cmd *lexer(t_info *info)
 // {
