@@ -171,10 +171,6 @@ bool is_in(char c, const char *str);
 
 
 
-// t_cmd *lexer(t_info *info)
-// {
-
-// }
 
 
 int main(void) {
