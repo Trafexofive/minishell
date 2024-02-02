@@ -1,0 +1,19 @@
+total 216
+-rw-r--r--   1 mlamkadm  candidate      0 Feb  2 01:28 ---------------
+drwxr-xr-x  18 mlamkadm  candidate    612 Feb  2 02:56 .
+drwxr-xr-x   8 mlamkadm  candidate    272 Feb  2 01:28 ..
+-rw-r--r--   1 mlamkadm  candidate    571 Feb  2 01:55 Makefile
+-rw-r--r--   1 mlamkadm  candidate      0 Feb  2 02:50 cc
+-rw-r--r--   1 mlamkadm  candidate   1372 Feb  2 01:28 garbage.c
+-rw-r--r--   1 mlamkadm  candidate   1472 Feb  2 02:56 garbage.o
+-rw-r--r--   1 mlamkadm  candidate      0 Feb  2 02:56 hello
+-rw-r--r--   1 mlamkadm  candidate    140 Feb  2 02:45 jj
+-rw-r--r--   1 mlamkadm  candidate   3390 Feb  2 01:28 lexer.c
+-rw-r--r--   1 mlamkadm  candidate   2016 Feb  2 02:56 lexer.o
+-rw-r--r--   1 mlamkadm  candidate     76 Feb  2 01:28 main.c
+-rwxr-xr-x   1 mlamkadm  candidate  51304 Feb  2 02:56 minishell
+-rw-r--r--   1 mlamkadm  candidate    212 Feb  2 01:28 str_manipulation.c
+-rw-r--r--   1 mlamkadm  candidate   5744 Feb  2 02:56 tokenizer.c
+-rw-r--r--   1 mlamkadm  candidate   5236 Feb  2 02:56 tokenizer.o
+-rw-r--r--   1 mlamkadm  candidate   2516 Feb  2 02:54 utils.c
+-rw-r--r--   1 mlamkadm  candidate   3864 Feb  2 02:56 utils.o

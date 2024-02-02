@@ -1,0 +1,14 @@
+---------------
+Makefile
+garbage.c
+garbage.o
+jj
+lexer.c
+lexer.o
+main.c
+minishell
+str_manipulation.c
+tokenizer.c
+tokenizer.o
+utils.c
+utils.o
