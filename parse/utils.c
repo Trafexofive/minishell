@@ -27,11 +27,11 @@ int quote_len(char *line, t_info *info) {
 
   i = info->cursor;
   j = 0;
-  if (line[i - 1] == 34)
+  if (line[i] && line[i - 1] == 34)
   {
     while (line[i])
     {
-      if (line[i] == 34)
+      if (line[i] && line[i] == 34)
         return (j);
       i++;
       j++;
@@ -40,7 +40,7 @@ int quote_len(char *line, t_info *info) {
   else if (line[i - 1] == 39)
   {
   while (line[i]) {
-    if (line[i] == 39)
+    if (line[i] && line[i] == 39)
       return (j);
     i++;
     j++;

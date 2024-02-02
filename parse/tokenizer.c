@@ -57,8 +57,7 @@ void handle_operator(char *line, t_info *info) {
     str_token[1] = '\0';
     new_token = add_token(str_token, info);
     new_token->data_type = 5;
-    if (line[info->cursor])
-      info->cursor++;
+    info->cursor += 1;
   } 
   else if (line[info->cursor] == '>') {
     if ((line[info->cursor + 1]) == '>') {
@@ -104,6 +103,8 @@ t_oken *handle_quote(char *line, t_info *info) {
   info->cursor += 1;
   int i = info->cursor;
   int len = quote_len(line, info);
+  if (len == -1)
+    return NULL;
   printf("quote len ==> %d\n", len);
   str_token = chad_alloc(sizeof(char), len, info->alloc_head);
   while (j < len) {
@@ -118,7 +119,7 @@ t_oken *handle_quote(char *line, t_info *info) {
   else
     new_token->quote_type = 0;
   new_token->data_type = 6;
-  info->cursor += i;
+  info->cursor += j;
   return (new_token);
 }
 
@@ -157,15 +158,22 @@ t_info *main_loop(char *line, t_info *info) {
       handle_quote(line, info);
     }
     else if (is_operator(line[info->cursor]))
+    {
+
       handle_operator(line, info);
-    else if (ft_isprint(line[info->cursor]) && !is_space(line[info->cursor]) && !is_operator(line[info->cursor]) && !is_quote(line[info->cursor])){
+      puts("operator token");
+    }
+    else if (ft_isprint(line[info->cursor]) && !is_space(line[info->cursor]) && !is_operator(line[info->cursor]) && !is_quote(line[info->cursor]))
       handle_word(line, info);
-    } else if (line[info->cursor] == '$')
+    else if (line[info->cursor] == '$')
       handle_dollar(line, info);
     else if (is_space(line[info->cursor]))
       info->cursor++;
-
+    // else if (is_space(line[info->cursor + 1]))
+    //   info->cursor++;
   }
+  // puts("quote token");
+
   return (info);
 }
 
