@@ -10,10 +10,10 @@ bool check_line(char *line, t_info *info) // for checking early parse errors
     return FALSE;
   while (line[info->cursor]) {
     if (!is_space(line[info->cursor])) 
-      break;
+      return TRUE;
     info->cursor += 1;
   }
-  return TRUE;
+  return FALSE;
 } // such ar the '=' at the beggining
 
 void default_token(t_oken *head) {
@@ -95,7 +95,25 @@ void check_syntax(t_oken **tokens);
 
 // tokenizing words and operators
 
-// void  join_quotes(t_oken *head)
+void  join_quotes(t_oken *head)
+{
+  t_oken *token = head;
+  t_oken *next = head->next;
+  while (next)
+  {
+    if (/*token->quote_type == next->quote_type && */token->join_next == TRUE)
+    {
+      token->token = ft_strjoin(token->token, next->token);
+      token->next = next->next;
+      next = next->next;
+    }
+    else
+    {
+      token = next;
+      next = next->next;
+    }
+  }
+}
 
 t_oken *handle_quote(char *line, t_info *info) {
   // handling quotes by taking everything inside them regardless;
@@ -117,17 +135,19 @@ t_oken *handle_quote(char *line, t_info *info) {
   }
   str_token[len] = '\0';
   new_token = add_token(str_token, info);
-  if (line[i + 2] == DQUOTE && new_token->quote_type == 1)
-    new_token->join_next = TRUE;
-  else if (line[i + 2] == QUOTE && new_token->quote_type == 0)
-    new_token->join_next = TRUE;
-  else
-    new_token->join_next = FALSE;
+
   if (line[info->cursor - 1] == DQUOTE)
     new_token->quote_type = 1;
   else
     new_token->quote_type = 0;
-  new_token->data_type = 6;
+  new_token->data_type = WORD;
+  // does not support different quotes joining
+  if (line[i + 1] == DQUOTE && new_token->quote_type == 1)
+    new_token->join_next = TRUE;
+  else if (line[i + 1] == QUOTE && new_token->quote_type == 0)
+    new_token->join_next = TRUE;
+  else
+    new_token->join_next = FALSE;
   info->cursor += j + 1;
   return (new_token);
 }
@@ -176,12 +196,9 @@ t_info *main_loop(char *line, t_info *info) {
     else if (is_space(line[info->cursor]))
       info->cursor++;
   }
-  // puts("quote token");
 
   return (info);
 }
-
-// bool is_in(char c, const char *str);
 
 void print_all_cmd(t_cmd *cmd) 
 {
@@ -198,7 +215,7 @@ int main(void) {
   t_info *info;
   char *line;
   t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
-  t_cmd *cmd;
+  // t_cmd *cmd;
 
   alloc_head->next = NULL;
   info = ft_calloc(1, sizeof(t_info));
@@ -210,14 +227,16 @@ int main(void) {
   line = readline("minishell$ ");
   // if (!line)
   //   break;
-  // else if (line[0] == '\0')
-      // free_all(alloc_head);
+  if (line[0] == '\0')
+    return (0);
+
   info->line = line;
   info->cursor = 0;
   main_loop(line, info);
-  // print_tokens(info->head);
-  cmd = lexer(info);
-  print_all_cmd(cmd);
+  join_quotes(info->head);
+  print_tokens(info->head);
+  // cmd = lexer(info);
+  // print_all_cmd(cmd);
     free(line);
   // free(line);
   // free_all(alloc_head);
