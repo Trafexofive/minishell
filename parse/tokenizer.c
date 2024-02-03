@@ -63,13 +63,13 @@ void handle_operator(char *line, t_info *info) {
   else if (line[info->cursor] == '>') {
     if ((line[info->cursor + 1]) == '>') {
       char *str_token = ft_strdup(">>");
-      // add_address(str_token, info->alloc_head);
+      add_address(str_token, info->alloc_head);
       new_token = add_token(str_token, info);
       new_token->data_type = 4;
       info->cursor += 2;
     } else {
       char *str_token = ft_strdup(">");
-      // add_address(str_token, info->alloc_head);
+      add_address(str_token, info->alloc_head);
       new_token = add_token(str_token, info);
       new_token->data_type = 2;
       info->cursor += 1;
@@ -77,13 +77,13 @@ void handle_operator(char *line, t_info *info) {
   } else if (line[info->cursor] == '<') {
     if (line[info->cursor + 1] == '<') {
       char *str_token = ft_strdup("<<");
-      // add_address(str_token, info->alloc_head);
+      add_address(str_token, info->alloc_head);
       new_token = add_token(str_token, info);
       new_token->data_type = 3;
       info->cursor += 2;
     } else {
       char *str_token = ft_strdup("<");
-      // add_address(str_token, info->alloc_head);
+      add_address(str_token, info->alloc_head);
       new_token = add_token(str_token, info);
       new_token->data_type = 1;
       info->cursor += 1;

@@ -87,7 +87,7 @@ void print_all_cmd(t_cmd *cmd);
 const char *translate(int c);
 
 
-// ls -la | grep .c | wc -l | cat -e 
+// ls -la | grep .c "keep"| wc -l | cat -e 'hello'
 
 
 #endif
