@@ -58,6 +58,7 @@ typedef struct s_info {
   t_cmd *cmd;
   char *line;
   int cursor;
+  struct s_var *var;
   struct s_token *pipe;
   struct s_token *head;
 } t_info;

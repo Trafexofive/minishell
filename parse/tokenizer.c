@@ -219,7 +219,7 @@ int main(void) {
   main_loop(line, info);
   // print_tokens(info->head);
   cmd = lexer(info);
-  print_all_cmd(cmd);
+  // print_all_cmd(cmd);
     free(line);
   // free(line);
   // free_all(alloc_head);

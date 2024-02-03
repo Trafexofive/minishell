@@ -66,8 +66,7 @@ void print_cmd(t_cmd *cmd) {
 bool	check_token_syntax(t_oken *tokens)
 {
 //	free on exit
-
-	if (tokens->data_type != WORD)
+	if (tokens->data_type != WORD && tokens->data_type != PIPE)
 	{
 		printf("syntax error near unexpected token `newline'\n");
 		exit(1);
@@ -84,7 +83,7 @@ bool	check_token_syntax(t_oken *tokens)
 		if (tokens == NULL)
 			break ;
 		if (tokens->data_type == REDIR_IN || tokens->data_type == REDIR_OUT || tokens->data_type == HEREDOC
-			|| tokens->data_type == HERESTRING || tokens->data_type == PIPE)
+			|| tokens->data_type == APPEND || tokens->data_type == PIPE)
 		{
 			if (tokens->next == NULL)
 			{
@@ -99,15 +98,6 @@ bool	check_token_syntax(t_oken *tokens)
 					exit(1);
 				}
 		}
-
-		// else if (tokens->data_type == 6)
-		// {
-		// 	if (tokens->next == NULL || tokens->next->data_type != 6)
-		// 	{
-		// 		printf("syntax error near unexpected token `newline'\n");
-		// 		return (TRUE);
-		// 	}
-		// }
 		tokens = tokens->next;
 	}
 	return (FALSE);
@@ -130,6 +120,91 @@ int	words_before_pipe(t_oken *tokens)
 	return (count);
 }
 
+
+//untested
+t_var *add_var(char *str_token, t_info *info)
+{
+	t_var	*var;
+	t_var	*head;
+	char	*name;
+	char	*value;
+	int		i;
+
+	i = 0;
+	while (str_token[i] != '=')
+		i++;
+	name = chad_alloc(sizeof(char), i + 1, info->alloc_head);
+	i = 0;
+	while (str_token[i] != '=')
+	{
+		name[i] = str_token[i];
+		i++;
+	}
+	name[i] = '\0';
+	value = chad_alloc(sizeof(char), ft_strlen(str_token) - i, info->alloc_head);
+	i++;
+	int j = 0;
+	while (str_token[i])
+	{
+		value[j] = str_token[i];
+		i++;
+		j++;
+	}
+	value[j] = '\0';
+	var = chad_alloc(sizeof(t_var), 1, info->alloc_head);
+	var->name = name;
+	var->value = value;
+	var->next = NULL;
+	if (info->var == NULL)
+		info->var = var;
+	else
+	{
+		head = info->var;
+		while (head->next != NULL)
+			head = head->next;
+		head->next = var;
+	}
+	return (var);
+}
+
+void	print_redir(t_redir *redir)
+{
+	while (redir)
+	{
+		printf("file => %s | type => %s\n", redir->file, translate(redir->type));
+		redir = redir->next;
+	}
+}
+
+
+void	handle_redir(t_oken *tokens, t_info *info)
+{
+	t_redir	*redir;
+	t_redir	*head;
+	char	*file;
+	int		type = -1;
+
+	if (tokens->data_type == REDIR_IN)
+		type = REDIR_IN;
+	else if (tokens->data_type == REDIR_OUT)
+		type = REDIR_OUT;
+	else if (tokens->data_type == APPEND)
+		type = 4;
+	file = tokens->next->token;
+	redir = chad_alloc(sizeof(t_redir), 1, info->alloc_head);
+	redir->type = type;
+	redir->file = file;
+	redir->next = NULL;
+	if (info->cmd->redir == NULL)
+		info->cmd->redir = redir;
+	else
+	{
+		head = info->cmd->redir;
+		while (head->next != NULL)
+			head = head->next;
+		head->next = redir;
+	}
+}
 
 t_cmd	*lexer(t_info *info)
 {
@@ -157,8 +232,7 @@ t_cmd	*lexer(t_info *info)
 
 
 			// printf("token => %s : type = %s\n", tokens->token, translate(tokens->data_type));
-
-		// if (tokens->data_type != 6 && tokens->data_type != 5)
+		// if (tokens->data_type != WORD && tokens->data_type != PIPE)
 		// {
 		// 	handle_redir(tokens, info);
 		// 	tokens = tokens->next;
@@ -179,6 +253,8 @@ t_cmd	*lexer(t_info *info)
 		if (tokens->data_type == WORD)
 		{
 			cmd->cmd[i] = tokens->token;
+			if (tokens->dollar_presence == TRUE)
+				cmd->var = add_var(tokens->token, info);
 		}
 		if (tokens->next == NULL)
 		{
@@ -188,6 +264,7 @@ t_cmd	*lexer(t_info *info)
 		tokens = tokens->next;
 		i++;
 	}
+	print_redir(head->redir);
 	info->cmd = head;
 	return (head);
 }

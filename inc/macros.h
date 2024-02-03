@@ -13,8 +13,9 @@
 #define REDIR_IN 1
 #define REDIR_OUT 2
 #define HEREDOC 3
-#define HERESTRING 4
+#define APPEND 4
 #define PIPE 5
 #define WORD 6
+#define VAR 7
 
 #endif
