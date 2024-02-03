@@ -52,7 +52,7 @@ int quote_len(char *line, t_info *info) {
 }
 
 bool is_operator(char c) {
-  if (c == PIPE || c == '>' || c == '<')
+  if (c == '|' || c == '>' || c == '<')
     return (TRUE);
   return (FALSE);
 }

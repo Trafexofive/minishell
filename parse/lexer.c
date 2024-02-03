@@ -2,6 +2,7 @@
 
 #include "../inc/minish.h"
 
+
 bool	is_op(int op)
 {
 	if (op != 6)
@@ -58,7 +59,7 @@ void print_cmd(t_cmd *cmd) {
     printf("cmd token[%d]=>%s\n", i, cmd->cmd[i]);
     i++;
   }
-    // printf("%s\n", cmd->cmd[i]);
+    printf("%s\n", cmd->cmd[i]);
 }
 
 // bool	check_syntax(char *line)
@@ -69,11 +70,10 @@ void print_cmd(t_cmd *cmd) {
 
 
 
-bool	check_token_syntax(t_info *info)
+bool	check_token_syntax(t_oken *tokens)
 {
 	t_oken	*tokens;
 
-	tokens = info->head;
 	while (tokens)
 	{
 		if (tokens == NULL)
@@ -88,6 +88,7 @@ bool	check_token_syntax(t_info *info)
 				return (TRUE);
 			}
 		}
+		
 		// else if (tokens->data_type == 6)
 		// {
 		// 	if (tokens->next == NULL || tokens->next->data_type != 6)
@@ -109,16 +110,15 @@ int	words_before_pipe(t_oken *tokens)
 	count = 0;
 	while (tokens)
 	{
-		if (tokens->data_type == 5 || tokens->next == NULL)
+		if (tokens->data_type == 5 || tokens == NULL)
 		{
-			break ;
+			puts("pipe found");
+			return (count);
 		}
-		else if (tokens->data_type == 6)
+		else
 			count++;
 		tokens = tokens->next;
 	}
-	if (tokens == NULL)
-		count++;
 	return (count);
 }
 
@@ -132,8 +132,8 @@ t_cmd	*lexer(t_info *info)
 	int		i;
 
 	tokens = info->head;
-	word_count = words_before_pipe(tokens);
-				printf("word count => %d\n", word_count);
+	word_count = words_before_pipe(tokens) + 1;
+	printf("word count => %d\n", word_count);
 	cmd = chad_alloc(sizeof(t_cmd), 1, info->alloc_head);
 	head = cmd;
 	cmd->cmd = chad_alloc(sizeof(char *), word_count, info->alloc_head);
@@ -145,19 +145,29 @@ t_cmd	*lexer(t_info *info)
 		// if you find a pipe, create a new cmd
 		// add the tokens to the cmd
 		// if you find a redirect, add it to the cmd
-		if (tokens->data_type == 5)
+
+
+			// printf("token => %s : type = %s\n", tokens->token, translate(tokens->data_type));
+
+		// if (tokens->data_type != 6 && tokens->data_type != 5)
+		// {
+		// 	handle_redir(tokens, info);
+		// 	tokens = tokens->next;
+		// 	continue ;
+		// }
+		if (tokens->data_type == PIPE)
 		{
-			// printf("token => %s\n", tokens->token);
 			cmd->cmd[i] = NULL;
 			cmd->next = chad_alloc(sizeof(t_cmd), 1, info->alloc_head);
 			cmd = cmd->next;
-				word_count = words_before_pipe(tokens) + 1;
-				printf("word count => %d\n", word_count);
-				cmd->cmd = chad_alloc(sizeof(char *), word_count,
-						info->alloc_head);
+			word_count = words_before_pipe(tokens->next) + 1;
+			cmd->cmd = chad_alloc(sizeof(char *), word_count, info->alloc_head);
+			// printf("cmd => %s\n", cmd->cmd[0]);
+			tokens = tokens->next;
+
 			i = 0;
 		}
-		else if (tokens->data_type == 6)
+		if (tokens->data_type == WORD)
 		{
 			cmd->cmd[i] = tokens->token;
 		}
@@ -167,87 +177,9 @@ t_cmd	*lexer(t_info *info)
 			break ;
 		}
 		tokens = tokens->next;
-		// printf("cmd => %s\n", cmd->cmd[i]);
 		i++;
-		// word_count = words_before_pipe(tokens) + 1;
 	}
 	info->cmd = head;
 	return (head);
 }
-
-// t_cmd	*lexer(t_info *info)
-// {
-// 	int		word_count;
-// 	t_cmd	*cmd;
-// 	t_oken	*tokens;
-// 	int		i;
-
-// 	// check_syntax(info->line);
-// 	// if (check_token_syntax(info))
-// 	// 	exit(e);
-
-// 	tokens = info->head;
-// 	word_count = words_before_pipe(tokens) + 1;
-// 	cmd = chad_alloc(sizeof(t_cmd), 1, info->alloc_head);
-// 	cmd->cmd = chad_alloc(sizeof(char *), word_count, info->alloc_head);
-// 	// print_tokens(tokens);
-// 	i = 0;
-// 	while (tokens != NULL)
-// 	{
-// 		// loop until you find a pipe
-// 		// if you find a pipe, create a new cmd
-// 		// add the tokens to the cmd
-// 		// if you find a redirect, add it to the cmd		
-// 		if (tokens->data_type == 5)
-// 		{
-// 			// printf("token => %s\n", tokens->token);
-// 			cmd->cmd[i] = NULL;
-// 			cmd->next = chad_alloc(sizeof(t_cmd), 1, info->alloc_head);
-// 			cmd = cmd->next;
-// 			if (tokens->next != NULL)
-// 			{
-// 				// word_count = words_before_pipe(tokens) + 1;
-// 				printf("token => %s\n", tokens->next->token);
-// 				word_count = words_before_pipe(tokens->next);
-// 				printf("word count => %d\n", word_count);
-// 				cmd->cmd = chad_alloc(sizeof(char *), word_count,
-// 						info->alloc_head);
-// 			}
-// 			i = 0;
-// 			tokens = tokens->next;
-// 		}
-// 		else if (tokens->data_type == 6)
-// 		{
-// 			cmd->cmd[i] = tokens->token;
-// 			// printf("cmd[%d] => %s\n", i, cmd->cmd[i]);
-// 		}
-// 		if (tokens->next == NULL)
-// 		{
-// 			cmd->cmd[i + 1] = NULL;
-// 			break ;
-// 		}
-// 		// else if (tokens->data_type != 6 && tokens->data_type != 5)
-// 		// 	{
-// 		// 		//for redir
-// 		// 		break;
-// 		// 	}
-// 			// print_cmd(cmd);
-// 		// if (tokens->next == NULL)
-// 		// 	break ;
-// 			// printf("cmd[%d] => %s\n", i, cmd->cmd[i]);
-// 		tokens = tokens->next;
-// 		i++;
-// 		// word_count = words_before_pipe(tokens) + 1;
-// 		// printf("word count => %d\n", word_count);
-// 	}
-// 	// while (cmd->cmd[i] != NULL)
-// 	// {
-// 	// 	printf("cmd[%d] => %s\n", i, cmd->cmd[i]);
-// 	// 	i++;
-// 	// }
-// 	// print_all_cmd(cmd);
-// 	// info->cmd = cmd;
-// 	// free_token(info->head);
-// 	return (cmd);
-// }
 

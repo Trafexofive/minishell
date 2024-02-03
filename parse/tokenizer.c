@@ -52,7 +52,7 @@ t_oken *add_token(char *str_token, t_info *info) {
 }
 void handle_operator(char *line, t_info *info) {
   t_oken *new_token;
-  if (line[info->cursor] == PIPE) {
+  if (line[info->cursor] == '|') {
     char *str_token = chad_alloc(1, 2, info->alloc_head);
     str_token[0] = '|';
     str_token[1] = '\0';
@@ -129,7 +129,6 @@ t_oken *handle_quote(char *line, t_info *info) {
     new_token->quote_type = 0;
   new_token->data_type = 6;
   info->cursor += j + 1;
-  printf("char at cursor ==> %c\n", line[info->cursor]);
   return (new_token);
 }
 
@@ -139,7 +138,6 @@ t_oken *handle_word(char *line, t_info *info) {
   int j = 0;
   int i = info->cursor;
   int len = word_len(info);
-  // printf("word len ==> %d\n", len);
   str_token = chad_alloc(sizeof(char), len + 1, info->alloc_head);
   while (j < len) {
     str_token[j] = line[i];
@@ -196,7 +194,6 @@ void print_all_cmd(t_cmd *cmd)
     cmd = cmd->next;
     if (cmd == NULL)
       break;
-    puts("next cmd");
   }
 }
 
