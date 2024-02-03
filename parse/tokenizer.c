@@ -142,6 +142,7 @@ t_oken *handle_quote(char *line, t_info *info) {
     new_token->quote_type = 0;
   new_token->data_type = WORD;
   // does not support different quotes joining
+  // flag the in handle_word and join them
   if (line[i + 1] == DQUOTE && new_token->quote_type == 1)
     new_token->join_next = TRUE;
   else if (line[i + 1] == QUOTE && new_token->quote_type == 0)
