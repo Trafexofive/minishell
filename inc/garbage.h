@@ -7,7 +7,7 @@
 
 typedef struct s_alloc {
   void *address;
-  struct s_alloc *alloc_node;
+  void  *alloc_node;
   struct s_alloc *next;
 } t_alloc;
 

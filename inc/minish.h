@@ -30,7 +30,7 @@ typedef struct s_token {
   struct s_token *next;
   struct s_token *prev;
   bool dollar_presence;
-  char *expanded_token; // good idea but expanding should be after the parser is
+  bool  join_next;
                         // done
   int quote_type;       // 0 - singleq, 1 - dblquote , -1 not quote in token
 } t_oken;
@@ -44,20 +44,23 @@ typedef struct s_cmd {
   char **cmd;
   struct s_cmd *next;
   struct s_cmd *prev;
+  struct s_redir *redir;
   int status;
   int pid;
-  int fd_in;
-  int fd_out;
 } t_cmd;
 
-typedef struct s_info {
+typedef struct s_redir {
+  int type;
+  char *file;
+  struct s_redir *next;
+  } t_redir;
 
+typedef struct s_info {
   t_alloc *alloc_head;
   t_cmd *cmd;
   char *line;
-  bool debug;
   int cursor;
-  bool quote_presence;
+  struct s_token *pipe;
   struct s_token *head;
 } t_info;
 

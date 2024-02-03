@@ -4,7 +4,8 @@
 
 void parse_error(const char *exit_msg, t_info *info) {
   printf("%s\n", exit_msg);
-  free_all(info->alloc_head);
+  // free_all(info->alloc_head);
+  (void)info;
   exit(1);
 }
 
@@ -132,8 +133,8 @@ const char *translate(int c) {
 void print_tokens(t_oken *head_token) {
   t_oken *ptr = head_token;
   while (ptr->next != NULL) {
-    printf("token :%s--quote value =>%d--type =>%s \n", ptr->token,
-           ptr->quote_type, translate(ptr->data_type));
+    printf("token :%s--quote value =>%d--type =>%s ,join_next%d\n", ptr->token,
+           ptr->quote_type, translate(ptr->data_type), ptr->join_next);
     ptr = ptr->next;
   }
     printf("token :%s--quote value =>%d--type =>%s \n", ptr->token,

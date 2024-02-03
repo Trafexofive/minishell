@@ -29,21 +29,22 @@ void default_token(t_oken *head) {
 // allocate for the token outside
 t_oken *add_token(char *str_token, t_info *info) {
   size_t size = sizeof(t_oken);
-  t_oken *iter = info->head;
-  if (info->head == NULL) {
+  // t_oken *iter = info->head;
+  t_oken *head = info->head;
+  if (!info->head) {
     t_oken *token = chad_alloc(size, 1, info->alloc_head);
     info->head = token;
     default_token(token);
     token->token = str_token;
     return (token);
   } else {
-    while (iter->next != NULL) {
-      iter = iter->next;
+    while (head->next != NULL) {
+      head = head->next;
     }
     t_oken *token = chad_alloc(size, 1, info->alloc_head);
     default_token(token);
-    iter->next = token;
-    token->prev = iter;
+    head->next = token;
+    token->prev = head;
     token->next = NULL;
     token->token = str_token;
     return (token);
@@ -62,13 +63,13 @@ void handle_operator(char *line, t_info *info) {
   else if (line[info->cursor] == '>') {
     if ((line[info->cursor + 1]) == '>') {
       char *str_token = ft_strdup(">>");
-      add_address(str_token, info->alloc_head);
+      // add_address(str_token, info->alloc_head);
       new_token = add_token(str_token, info);
       new_token->data_type = 4;
       info->cursor += 2;
     } else {
       char *str_token = ft_strdup(">");
-      add_address(str_token, info->alloc_head);
+      // add_address(str_token, info->alloc_head);
       new_token = add_token(str_token, info);
       new_token->data_type = 2;
       info->cursor += 1;
@@ -76,13 +77,13 @@ void handle_operator(char *line, t_info *info) {
   } else if (line[info->cursor] == '<') {
     if (line[info->cursor + 1] == '<') {
       char *str_token = ft_strdup("<<");
-      add_address(str_token, info->alloc_head);
+      // add_address(str_token, info->alloc_head);
       new_token = add_token(str_token, info);
       new_token->data_type = 3;
       info->cursor += 2;
     } else {
       char *str_token = ft_strdup("<");
-      add_address(str_token, info->alloc_head);
+      // add_address(str_token, info->alloc_head);
       new_token = add_token(str_token, info);
       new_token->data_type = 1;
       info->cursor += 1;
@@ -93,6 +94,9 @@ void handle_operator(char *line, t_info *info) {
 void check_syntax(t_oken **tokens);
 
 // tokenizing words and operators
+
+// void  join_quotes(t_oken *head)
+
 t_oken *handle_quote(char *line, t_info *info) {
   // handling quotes by taking everything inside them regardless;
   // update quote type
@@ -105,8 +109,7 @@ t_oken *handle_quote(char *line, t_info *info) {
   int len = quote_len(line, info);
   if (len == -1)
     return NULL;
-  printf("quote len ==> %d\n", len);
-  str_token = chad_alloc(sizeof(char), len, info->alloc_head);
+  str_token = (char *)chad_alloc(1, len, info->alloc_head);
   while (j < len) {
     str_token[j] = line[i];
     j++;
@@ -114,12 +117,19 @@ t_oken *handle_quote(char *line, t_info *info) {
   }
   str_token[len] = '\0';
   new_token = add_token(str_token, info);
+  if (line[i + 2] == DQUOTE && new_token->quote_type == 1)
+    new_token->join_next = TRUE;
+  else if (line[i + 2] == QUOTE && new_token->quote_type == 0)
+    new_token->join_next = TRUE;
+  else
+    new_token->join_next = FALSE;
   if (line[info->cursor - 1] == DQUOTE)
     new_token->quote_type = 1;
   else
     new_token->quote_type = 0;
   new_token->data_type = 6;
-  info->cursor += j;
+  info->cursor += j + 1;
+  printf("char at cursor ==> %c\n", line[info->cursor]);
   return (new_token);
 }
 
@@ -129,7 +139,7 @@ t_oken *handle_word(char *line, t_info *info) {
   int j = 0;
   int i = info->cursor;
   int len = word_len(info);
-  printf("word len ==> %d\n", len);
+  // printf("word len ==> %d\n", len);
   str_token = chad_alloc(sizeof(char), len + 1, info->alloc_head);
   while (j < len) {
     str_token[j] = line[i];
@@ -153,15 +163,15 @@ t_info *main_loop(char *line, t_info *info) {
   if (!check_line(line, info))
     return NULL;
   while (line[info->cursor]) {
-    if (line[info->cursor] == DQUOTE || line[info->cursor] == QUOTE)
-    {
-      handle_quote(line, info);
-    }
-    else if (is_operator(line[info->cursor]))
+    if (is_operator(line[info->cursor]))
     {
 
       handle_operator(line, info);
       puts("operator token");
+    }
+    else if (line[info->cursor] == DQUOTE || line[info->cursor] == QUOTE)
+    {
+      handle_quote(line, info);
     }
     else if (ft_isprint(line[info->cursor]) && !is_space(line[info->cursor]) && !is_operator(line[info->cursor]) && !is_quote(line[info->cursor]))
       handle_word(line, info);
@@ -179,36 +189,45 @@ t_info *main_loop(char *line, t_info *info) {
 
 // bool is_in(char c, const char *str);
 
-void print_cmd(t_cmd *cmd) {
-  int i = 0;
-  while (cmd->cmd[i] != NULL) {
-    printf("%s\n", cmd->cmd[i]);
-    i++;
+void print_all_cmd(t_cmd *cmd) 
+{
+  while (cmd) {
+    print_tokens(cmd->tokens);
+    cmd = cmd->next;
   }
 }
+
 
 int main(void) {
   t_info *info;
   char *line;
   t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
+  t_cmd *cmd;
 
   alloc_head->next = NULL;
   info = ft_calloc(1, sizeof(t_info));
   alloc_head->address = info;
   // line = ft_strdup("ls -la >> << > < $hello | grep a | tr a b | cat -e");
-  line = readline("minishell$ ");
-  info->line = line;
   info->alloc_head = alloc_head;
   info->head = NULL;
+  
+  line = readline("minishell$ ");
+  // if (!line)
+  //   break;
+  // else if (line[0] == '\0')
+      // free_all(alloc_head);
+  info->line = line;
   info->cursor = 0;
+  main_loop(line, info);
+  // print_tokens(info->head);
+  cmd = lexer(info);
+  print_all_cmd(cmd);
+    free(line);
+  // free(line);
+  // free_all(alloc_head);
 
   //   add_address(line, alloc_head);
-  main_loop(line, info);
-  print_tokens(info->head);
-  //lexer(info);
-  // print_cmd(info->cmd);
-  free(line);
-  free_all(alloc_head);
+  // free(line);
 
   return EXIT_SUCCESS;
 }
