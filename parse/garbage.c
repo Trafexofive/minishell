@@ -23,9 +23,10 @@ void *chad_alloc(size_t size, int quantity, t_alloc *first_adress) {
   t_alloc *iter = first_adress;
 
   alloc_ptr = ft_calloc(size ,quantity);
-  fprintf(stderr, "break\n");
   if (!alloc_ptr)
     return (NULL);
+  fprintf(stderr, "break\n");
+  // fprintf(stderr, "address: %p\n", first_adress);
     while (iter->next != NULL) {
       iter = iter->next;
     }
@@ -43,7 +44,7 @@ void *chad_alloc(size_t size, int quantity, t_alloc *first_adress) {
 
 void free_all(t_alloc *head) {
   t_alloc *tmp;
-  head = head->next;
+  // head = head->next;
   //skipping info struct
   while (head->next != NULL) {
     // puts("freeing");

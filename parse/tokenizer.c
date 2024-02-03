@@ -214,52 +214,55 @@ void print_all_cmd(t_cmd *cmd)
   }
 }
 
-void  readline_loop(t_info *info)
+void  chad_readline(t_info *info, t_alloc *alloc_head)
 {
   char *line;
   t_cmd *cmd;
-    t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
-  alloc_head->next = NULL;
-  info = ft_calloc(1, sizeof(t_info));
-  alloc_head->address = info;
-  info->alloc_head = alloc_head;
-  info->head = NULL;
-  while (1)
-  {
     info->cursor = 0;
     line = readline("minishell$ ");
     if (!line)
     {
-      break;
+      return;
     }
     if (line[0] == '\0')
     {
       free(line);
-      continue;
+      return;
     }
     info->line = line;
     main_loop(line, info);
     join_quotes(info->head);
     cmd = lexer(info);
     print_all_cmd(cmd);
+    // info->alloc_head->address = NULL;
+    // info->head = NULL;
     free_all(alloc_head);
-    info->alloc_head->address = NULL;
-    info->head = NULL;
-    free(line);
+    // free(line);
 
-
-
-    free(info);
-  }
+    // free(info);
 }
 
 int main(void) {
   t_info *info;
+  t_alloc *alloc_head;
+
+  // info->alloc_head = alloc_head;
   // char *line;
   // t_cmd *cmd;
 
+while (TRUE)
+{
+  info = ft_calloc(1, sizeof(t_info));
+  alloc_head = ft_calloc(1, sizeof(t_alloc));
+  alloc_head->next = NULL;
+  alloc_head->address = ft_strdup("placeholder");
+  info->alloc_head = alloc_head;
+  // fprintf(stderr, "address: %p\n", alloc_head);
+  info->head = NULL;
+  chad_readline(info, alloc_head);
+
+}
   
-  readline_loop(info);
   return EXIT_SUCCESS;
 }
 
