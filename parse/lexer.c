@@ -72,23 +72,41 @@ void print_cmd(t_cmd *cmd) {
 
 bool	check_token_syntax(t_oken *tokens)
 {
-	t_oken	*tokens;
+//	free on exit
 
+	if (tokens->data_type != WORD)
+	{
+		printf("syntax error near unexpected token `newline'\n");
+		exit(1);
+		return (TRUE);
+	}
+	else if (tokens->data_type == PIPE)
+	{
+		printf("syntax error near unexpected token `|'\n");
+		exit(1);
+		return (TRUE);
+	}
 	while (tokens)
 	{
 		if (tokens == NULL)
 			break ;
-		if (tokens->data_type == 1 || tokens->data_type == 2 || tokens->data_type == 3
-			|| tokens->data_type == 4 || tokens->data_type == 5)
+		if (tokens->data_type == REDIR_IN || tokens->data_type == REDIR_OUT || tokens->data_type == HEREDOC
+			|| tokens->data_type == HERESTRING || tokens->data_type == PIPE)
 		{
-			if (tokens->next == NULL || tokens->next->data_type != 6)
+			if (tokens->next == NULL)
 			{
+
 				printf("syntax error near unexpected token `newline'\n");
 				exit(1);
 				return (TRUE);
-			}
+			}				
+			else if (tokens->next->data_type != WORD)
+				{
+					printf("syntax error near unexpected token `%s'\n", tokens->token);
+					exit(1);
+				}
 		}
-		
+
 		// else if (tokens->data_type == 6)
 		// {
 		// 	if (tokens->next == NULL || tokens->next->data_type != 6)
@@ -111,10 +129,7 @@ int	words_before_pipe(t_oken *tokens)
 	while (tokens)
 	{
 		if (tokens->data_type == 5 || tokens == NULL)
-		{
-			puts("pipe found");
 			return (count);
-		}
 		else
 			count++;
 		tokens = tokens->next;
@@ -132,6 +147,7 @@ t_cmd	*lexer(t_info *info)
 	int		i;
 
 	tokens = info->head;
+	check_token_syntax(tokens);
 	word_count = words_before_pipe(tokens) + 1;
 	printf("word count => %d\n", word_count);
 	cmd = chad_alloc(sizeof(t_cmd), 1, info->alloc_head);

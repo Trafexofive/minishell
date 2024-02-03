@@ -163,9 +163,7 @@ t_info *main_loop(char *line, t_info *info) {
   while (line[info->cursor]) {
     if (is_operator(line[info->cursor]))
     {
-
       handle_operator(line, info);
-      puts("operator token");
     }
     else if (line[info->cursor] == DQUOTE || line[info->cursor] == QUOTE)
     {

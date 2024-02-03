@@ -10,10 +10,11 @@
 #define QUOTE 39
 #define DQUOTE 34
 
-#define PIPE '|'
-#define AMPERS '&'
-#define REDIR "<>"
-#define OR "||"
-#define DOLLAR '$'
+#define REDIR_IN 1
+#define REDIR_OUT 2
+#define HEREDOC 3
+#define HERESTRING 4
+#define PIPE 5
+#define WORD 6
 
 #endif
