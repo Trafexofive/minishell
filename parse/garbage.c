@@ -25,7 +25,7 @@ void *chad_alloc(size_t size, int quantity, t_alloc *first_adress) {
   alloc_ptr = ft_calloc(size ,quantity);
   if (!alloc_ptr)
     return (NULL);
-  fprintf(stderr, "break\n");
+  // fprintf(stderr, "break\n");
   // fprintf(stderr, "address: %p\n", first_adress);
     while (iter->next != NULL) {
       iter = iter->next;

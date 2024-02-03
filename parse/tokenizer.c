@@ -2,6 +2,33 @@
 
 #include "../inc/minish.h"
 
+char	*chad_strjoin(const char *s1, const char *s2, t_alloc *alloc_head)
+{
+	size_t	i;
+	size_t	j;
+	size_t	full_len;
+	char	*full_str;
+
+	i = 0;
+	j = 0;
+	full_len = ft_strlen(s1) + ft_strlen(s2) + 1;
+	if (!s1 || !s2)
+		return (NULL);
+	full_str = (char *)chad_alloc(full_len , sizeof(char), alloc_head);
+	if (!full_str)
+		return (NULL);
+	while (s1[i] && i < full_len)
+	{
+		full_str[i] = s1[i];
+		i++;
+	}
+	while (s2[j] && i < full_len)
+		full_str[i++] = s2[j++];
+	full_str[i] = '\0';
+	return (full_str);
+}
+
+
 t_oken **parse(const char *line);
 
 bool check_line(char *line, t_info *info) // for checking early parse errors
@@ -95,7 +122,7 @@ void check_syntax(t_oken **tokens);
 
 // tokenizing words and operators
 
-void  join_quotes(t_oken *head)
+void  join_quotes(t_oken *head, t_info *info)
 {
   t_oken *token = head;
   t_oken *next = head->next;
@@ -103,7 +130,7 @@ void  join_quotes(t_oken *head)
   {
     if (/*token->quote_type == next->quote_type && */token->join_next == TRUE)
     {
-      token->token = ft_strjoin(token->token, next->token);
+      token->token = chad_strjoin(token->token, next->token, info->alloc_head);
       token->next = next->next;
       next = next->next;
     }
@@ -177,7 +204,7 @@ void handle_dollar(char *line, t_info *info) {
   new_token->dollar_presence = TRUE;
 }
 
-t_info *main_loop(char *line, t_info *info) {
+t_info *tokenizer(char *line, t_info *info) {
 
   if (!check_line(line, info))
     return NULL;
@@ -219,7 +246,7 @@ void  chad_readline(t_info *info, t_alloc *alloc_head)
   char *line;
   t_cmd *cmd;
     info->cursor = 0;
-    line = readline("minishell$ ");
+    line = readline("Lbroshell$ ");
     if (!line)
     {
       return;
@@ -229,9 +256,16 @@ void  chad_readline(t_info *info, t_alloc *alloc_head)
       free(line);
       return;
     }
+    else if (strcmp(line, "exit") == 0)
+    {
+      free(line);
+      free_all(alloc_head);
+      exit(0);
+    }
+    add_history(line);
     info->line = line;
-    main_loop(line, info);
-    join_quotes(info->head);
+    tokenizer(line, info);
+    join_quotes(info->head, info);
     cmd = lexer(info);
     print_all_cmd(cmd);
     // info->alloc_head->address = NULL;
@@ -265,39 +299,3 @@ while (TRUE)
   
   return EXIT_SUCCESS;
 }
-
-
-// int main(void) {
-//   t_info *info;
-//   char *line;
-//   t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
-//   // t_cmd *cmd;
-
-//   alloc_head->next = NULL;
-//   info = ft_calloc(1, sizeof(t_info));
-//   alloc_head->address = info;
-//   info->alloc_head = alloc_head;
-//   info->head = NULL;
-  
-//   line = readline("minishell$ ");
-//   // if (!line)
-//   //   break;
-//   if (line[0] == '\0')
-//     return (0);
-
-//   info->line = line;
-//   info->cursor = 0;
-//   main_loop(line, info);
-//   join_quotes(info->head);
-//   // print_tokens(info->head);
-//   cmd = lexer(info);
-//   // print_all_cmd(cmd);
-//     free(line);
-//   // free(line);
-//   free_all(alloc_head);
-
-//   //   add_address(line, alloc_head);
-//   // free(line);
-
-//   return EXIT_SUCCESS;
-// }
