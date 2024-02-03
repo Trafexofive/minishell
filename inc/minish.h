@@ -13,17 +13,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-// typedef enum s_cmd_type
-// {
-// 	WORD = 1;
-// 	PIPE = 2;
-// 	AMPERS = 3;
-// 	REDIR = 4;
-// 	OR = 5;
-// 	DOLLAR = 6;
-
-// } t_cmd_type;
-
 typedef struct s_token {
   int data_type;
   char *token;
@@ -46,6 +35,7 @@ typedef struct s_cmd {
   struct s_cmd *prev;
   struct s_redir *redir; // if not redir set to NULL
   struct s_redir *redir_out;
+  struct s_var *var;
   int status;
   int pid;
 } t_cmd;
@@ -55,7 +45,13 @@ typedef struct s_redir {
   char *file;
   struct s_redir *next;
   } t_redir;
-  
+
+  typedef struct s_var
+  {
+    char *name;
+    char *value;
+    struct s_var *next;
+  } t_var;
 
 typedef struct s_info {
   t_alloc *alloc_head;

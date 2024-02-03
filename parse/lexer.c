@@ -44,7 +44,7 @@ int	redir_count(t_info *info)
 }
 
 
-void  free_token(t_oken *token) {
+void  free_tokens(t_oken *token) {
   while (token->next != NULL) {
   if (token->token)
     free(token->token);
@@ -61,13 +61,6 @@ void print_cmd(t_cmd *cmd) {
   }
     printf("%s\n", cmd->cmd[i]);
 }
-
-// bool	check_syntax(char *line)
-// {
-
-
-// }
-
 
 
 bool	check_token_syntax(t_oken *tokens)
