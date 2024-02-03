@@ -25,7 +25,8 @@ void *chad_alloc(size_t size, int quantity, t_alloc *first_adress) {
   alloc_ptr = ft_calloc(size ,quantity);
   if (!alloc_ptr)
     return (NULL);
-    while (iter->next != NULL) {
+    fprintf(stderr, "break\n");
+    while (iter->next != NULL) { //segv here
       iter = iter->next;
     }
 	// puts("adding address");
@@ -42,7 +43,7 @@ void *chad_alloc(size_t size, int quantity, t_alloc *first_adress) {
 
 void free_all(t_alloc *head) {
   t_alloc *tmp;
-  // head = head->next;
+  head = head->next;
   //skipping info struct
   while (head->next != NULL) {
     // puts("freeing");

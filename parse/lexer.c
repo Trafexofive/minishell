@@ -176,27 +176,33 @@ void	print_redir(t_redir *redir)
 	}
 }
 
-
-void	handle_redir(t_oken *tokens, t_info *info)
+// needs more testing, bad logic
+void	handle_redir(t_oken *tokens, t_info *info, t_cmd *cmd)
 {
 	t_redir	*redir;
 	t_redir	*head;
 	char	*file;
 	int		type = -1;
+	(void)cmd;
 
 	if (tokens->data_type == REDIR_IN)
 		type = REDIR_IN;
 	else if (tokens->data_type == REDIR_OUT)
 		type = REDIR_OUT;
 	else if (tokens->data_type == APPEND)
-		type = 4;
-	file = tokens->next->token;
+		type = APPEND;
+	file = tokens->next->token; // need to check if this is a word
 	redir = chad_alloc(sizeof(t_redir), 1, info->alloc_head);
 	redir->type = type;
 	redir->file = file;
 	redir->next = NULL;
+	//needs to iterate through the cmd list
 	if (info->cmd->redir == NULL)
+	{
+
+	puts("syntax error");
 		info->cmd->redir = redir;
+	}
 	else
 	{
 		head = info->cmd->redir;
@@ -231,12 +237,12 @@ t_cmd	*lexer(t_info *info)
 
 
 			// printf("token => %s : type = %s\n", tokens->token, translate(tokens->data_type));
-		// if (tokens->data_type != WORD && tokens->data_type != PIPE)
-		// {
-		// 	handle_redir(tokens, info);
-		// 	tokens = tokens->next;
-		// 	continue ;
-		// }
+		if (tokens->data_type != WORD && tokens->data_type != PIPE)
+		{
+			handle_redir(tokens, info, cmd);
+			tokens = tokens->next;
+			continue ;
+		}
 		if (tokens->data_type == PIPE)
 		{
 			cmd->cmd[i] = NULL;

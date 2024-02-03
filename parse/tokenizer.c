@@ -159,7 +159,7 @@ t_oken *handle_word(char *line, t_info *info) {
   int j = 0;
   int i = info->cursor;
   int len = word_len(info);
-  str_token = chad_alloc(sizeof(char), len + 1, info->alloc_head);
+  str_token = chad_alloc(sizeof(char), len + 1, info->alloc_head); // segv here
   while (j < len) {
     str_token[j] = line[i];
     j++;
@@ -191,7 +191,10 @@ t_info *main_loop(char *line, t_info *info) {
       handle_quote(line, info);
     }
     else if (ft_isprint(line[info->cursor]) && !is_space(line[info->cursor]) && !is_operator(line[info->cursor]) && !is_quote(line[info->cursor]))
+    {
+
       handle_word(line, info);
+    }
     else if (line[info->cursor] == '$')
       handle_dollar(line, info);
     else if (is_space(line[info->cursor]))
@@ -211,39 +214,82 @@ void print_all_cmd(t_cmd *cmd)
   }
 }
 
+void  readline_loop(t_info *info)
+{
+  char *line;
+  t_cmd *cmd;
+  while (1)
+  {
+    info->cursor = 0;
+    line = readline("minishell$ ");
+    if (!line)
+      break;
+    if (line[0] == '\0')
+      continue;
+    info->line = line;
+    main_loop(line, info);
+    join_quotes(info->head);
+    cmd = lexer(info);
+    print_all_cmd(cmd);
+    free_all(info->alloc_head);
+    info->alloc_head = NULL;
+    info->head = NULL;
+    free(line);
+
+
+
+    free(info);
+  }
+}
 
 int main(void) {
   t_info *info;
-  char *line;
+  // char *line;
   t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
   // t_cmd *cmd;
 
   alloc_head->next = NULL;
   info = ft_calloc(1, sizeof(t_info));
   alloc_head->address = info;
-  // line = ft_strdup("ls -la >> << > < $hello | grep a | tr a b | cat -e");
   info->alloc_head = alloc_head;
   info->head = NULL;
   
-  line = readline("minishell$ ");
-  // if (!line)
-  //   break;
-  if (line[0] == '\0')
-    return (0);
-
-  info->line = line;
-  info->cursor = 0;
-  main_loop(line, info);
-  join_quotes(info->head);
-  print_tokens(info->head);
-  // cmd = lexer(info);
-  // print_all_cmd(cmd);
-    free(line);
-  // free(line);
-  // free_all(alloc_head);
-
-  //   add_address(line, alloc_head);
-  // free(line);
-
+  readline_loop(info);
   return EXIT_SUCCESS;
 }
+
+
+// int main(void) {
+//   t_info *info;
+//   char *line;
+//   t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
+//   // t_cmd *cmd;
+
+//   alloc_head->next = NULL;
+//   info = ft_calloc(1, sizeof(t_info));
+//   alloc_head->address = info;
+//   info->alloc_head = alloc_head;
+//   info->head = NULL;
+  
+//   line = readline("minishell$ ");
+//   // if (!line)
+//   //   break;
+//   if (line[0] == '\0')
+//     return (0);
+
+//   info->line = line;
+//   info->cursor = 0;
+//   main_loop(line, info);
+//   join_quotes(info->head);
+//   // print_tokens(info->head);
+//   cmd = lexer(info);
+//   // print_all_cmd(cmd);
+//     free(line);
+//   // free(line);
+//   free_all(alloc_head);
+
+//   //   add_address(line, alloc_head);
+//   // free(line);
+
+//   return EXIT_SUCCESS;
+// }
