@@ -192,8 +192,9 @@ t_info *main_loop(char *line, t_info *info) {
 void print_all_cmd(t_cmd *cmd) 
 {
   while (cmd) {
-    print_tokens(cmd->tokens);
+    print_cmd(cmd);
     cmd = cmd->next;
+    puts("next cmd");
   }
 }
 
@@ -221,7 +222,7 @@ int main(void) {
   main_loop(line, info);
   // print_tokens(info->head);
   cmd = lexer(info);
-  print_all_cmd(cmd);
+  // print_all_cmd(cmd);
     free(line);
   // free(line);
   // free_all(alloc_head);
