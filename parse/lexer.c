@@ -127,12 +127,15 @@ t_cmd	*lexer(t_info *info)
 {
 	int		word_count;
 	t_cmd	*cmd;
+	t_cmd	*head;
 	t_oken	*tokens;
 	int		i;
 
 	tokens = info->head;
-	word_count = words_before_pipe(tokens) + 1;
+	word_count = words_before_pipe(tokens);
+				printf("word count => %d\n", word_count);
 	cmd = chad_alloc(sizeof(t_cmd), 1, info->alloc_head);
+	head = cmd;
 	cmd->cmd = chad_alloc(sizeof(char *), word_count, info->alloc_head);
 	// print_tokens(tokens);
 	i = 0;
@@ -148,12 +151,10 @@ t_cmd	*lexer(t_info *info)
 			cmd->cmd[i] = NULL;
 			cmd->next = chad_alloc(sizeof(t_cmd), 1, info->alloc_head);
 			cmd = cmd->next;
-			if (tokens->next != NULL)
-			{
 				word_count = words_before_pipe(tokens) + 1;
+				printf("word count => %d\n", word_count);
 				cmd->cmd = chad_alloc(sizeof(char *), word_count,
 						info->alloc_head);
-			}
 			i = 0;
 		}
 		else if (tokens->data_type == 6)
@@ -166,14 +167,12 @@ t_cmd	*lexer(t_info *info)
 			break ;
 		}
 		tokens = tokens->next;
-		printf("cmd => %s\n", cmd->cmd[i]);
+		// printf("cmd => %s\n", cmd->cmd[i]);
 		i++;
 		// word_count = words_before_pipe(tokens) + 1;
 	}
-	printf("cmd => %s\n", cmd->cmd[i]);
-	printf("cmd => %s\n", cmd->cmd[i + 1]);
-	info->cmd = cmd;
-	return (cmd);
+	info->cmd = head;
+	return (head);
 }
 
 // t_cmd	*lexer(t_info *info)
