@@ -218,21 +218,32 @@ void  readline_loop(t_info *info)
 {
   char *line;
   t_cmd *cmd;
+    t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
+  alloc_head->next = NULL;
+  info = ft_calloc(1, sizeof(t_info));
+  alloc_head->address = info;
+  info->alloc_head = alloc_head;
+  info->head = NULL;
   while (1)
   {
     info->cursor = 0;
     line = readline("minishell$ ");
     if (!line)
+    {
       break;
+    }
     if (line[0] == '\0')
+    {
+      free(line);
       continue;
+    }
     info->line = line;
     main_loop(line, info);
     join_quotes(info->head);
     cmd = lexer(info);
     print_all_cmd(cmd);
-    free_all(info->alloc_head);
-    info->alloc_head = NULL;
+    free_all(alloc_head);
+    info->alloc_head->address = NULL;
     info->head = NULL;
     free(line);
 
@@ -245,14 +256,8 @@ void  readline_loop(t_info *info)
 int main(void) {
   t_info *info;
   // char *line;
-  t_alloc *alloc_head = ft_calloc(1, sizeof(t_alloc));
   // t_cmd *cmd;
 
-  alloc_head->next = NULL;
-  info = ft_calloc(1, sizeof(t_info));
-  alloc_head->address = info;
-  info->alloc_head = alloc_head;
-  info->head = NULL;
   
   readline_loop(info);
   return EXIT_SUCCESS;

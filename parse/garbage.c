@@ -25,6 +25,16 @@ void *chad_alloc(size_t size, int quantity, t_alloc *first_adress) {
   alloc_ptr = ft_calloc(size ,quantity);
   if (!alloc_ptr)
     return (NULL);
+  if (first_adress->address == NULL)
+  {
+    fprintf(stderr, " NULL break\n");
+    t_alloc *new_alloc_node = ft_calloc(1, sizeof(t_alloc));
+    new_alloc_node->alloc_node = new_alloc_node;
+    new_alloc_node->address = alloc_ptr;
+    new_alloc_node->next = NULL;
+  }
+  else
+  {
     fprintf(stderr, "break\n");
     while (iter->next != NULL) { //segv here
       iter = iter->next;
@@ -38,6 +48,8 @@ void *chad_alloc(size_t size, int quantity, t_alloc *first_adress) {
     new_alloc_node->address = alloc_ptr;
     // printf("address: %p\n", new_alloc_node->address);
     new_alloc_node->next = NULL;
+
+  }
   return (alloc_ptr);
 }
 
@@ -54,8 +66,8 @@ void free_all(t_alloc *head) {
       puts("freeing");
     free(tmp->address);
     free(tmp->alloc_node);
-    tmp->address = NULL;
-    tmp->alloc_node = NULL;
+    // tmp->address = NULL;
+    // tmp->alloc_node = NULL;
     }
 	// puts("freeing");
   }
