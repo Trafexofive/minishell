@@ -217,7 +217,6 @@ t_cmd	*lexer(t_info *info)
 	tokens = info->head;
 	check_token_syntax(tokens);
 	word_count = words_before_pipe(tokens) + 1;
-	printf("word count => %d\n", word_count);
 	cmd = chad_alloc(sizeof(t_cmd), 1, info->alloc_head);
 	head = cmd;
 	cmd->cmd = chad_alloc(sizeof(char *), word_count, info->alloc_head);
@@ -245,7 +244,6 @@ t_cmd	*lexer(t_info *info)
 			cmd = cmd->next;
 			word_count = words_before_pipe(tokens->next) + 1;
 			cmd->cmd = chad_alloc(sizeof(char *), word_count, info->alloc_head);
-			// printf("cmd => %s\n", cmd->cmd[0]);
 			tokens = tokens->next;
 
 			i = 0;

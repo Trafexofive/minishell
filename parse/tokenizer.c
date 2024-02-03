@@ -175,8 +175,6 @@ t_info *main_loop(char *line, t_info *info) {
       handle_dollar(line, info);
     else if (is_space(line[info->cursor]))
       info->cursor++;
-    // else if (is_space(line[info->cursor + 1]))
-    //   info->cursor++;
   }
   // puts("quote token");
 
@@ -219,7 +217,7 @@ int main(void) {
   main_loop(line, info);
   // print_tokens(info->head);
   cmd = lexer(info);
-  // print_all_cmd(cmd);
+  print_all_cmd(cmd);
     free(line);
   // free(line);
   // free_all(alloc_head);

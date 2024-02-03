@@ -50,6 +50,7 @@ void free_all(t_alloc *head) {
     head = head->next;
     if (tmp->address)
     {
+      puts("freeing");
     free(tmp->address);
     free(tmp->alloc_node);
     tmp->address = NULL;
