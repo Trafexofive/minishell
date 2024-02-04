@@ -47,7 +47,6 @@ void free_all(t_alloc *head) {
   // head = head->next;
   //skipping info struct
   while (head->next != NULL) {
-    // puts("freeing");
     tmp = head;
     head = head->next;
     if (tmp->address)

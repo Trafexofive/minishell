@@ -5,7 +5,6 @@
 
 
 
-t_oken **parse(const char *line);
 
 bool check_line(char *line, t_info *info) // for checking early parse errors
 {
@@ -54,7 +53,8 @@ t_oken *add_token(char *str_token, t_info *info) {
   }
 }
 
-void handle_operator(char *line, t_info *info) {
+void  handle_pipe(char *line, t_info *info)
+{
   t_oken *new_token;
   if (line[info->cursor] == '|') {
     char *str_token = chad_alloc(1, 2, info->alloc_head);
@@ -64,6 +64,13 @@ void handle_operator(char *line, t_info *info) {
     new_token->data_type = 5;
     info->cursor += 1;
   } 
+}
+
+void handle_operator(char *line, t_info *info) {
+  t_oken *new_token;
+  if (line[info->cursor] == '|') {
+    handle_pipe(line, info);
+  }
   else if (line[info->cursor] == '>') {
     if ((line[info->cursor + 1]) == '>') {
       char *str_token = chad_strdup(">>", info->alloc_head);
@@ -90,7 +97,6 @@ void handle_operator(char *line, t_info *info) {
     }
   }
 }
-
 
 void  join_quotes(t_oken *head, t_info *info)
 {
@@ -244,6 +250,13 @@ bool  line_is_empty(char *line)
   return TRUE;
 }
 
+void  chad_free(t_info *info, t_alloc *alloc_head)
+{
+  free(info->line);
+  free(info);
+  free_all(alloc_head);
+}
+
 void  chad_readline(t_info *info, t_alloc *alloc_head)
 {
   char *line;
@@ -256,27 +269,21 @@ void  chad_readline(t_info *info, t_alloc *alloc_head)
     }
     if (line[0] == '\0' || line_is_empty(line))
     {
-      free(line);
-      free(info);
-      free_all(alloc_head);
+      chad_free(info, alloc_head);
       return;
     }
     else if (strcmp(line, "exit") == 0)
     {
-      free(line);
-      free(info);
-      free_all(alloc_head);
+      chad_free(info, alloc_head);
 
-      // atexit(f);
+      atexit(f);
       exit(0);
     }
     add_history(line);
     info->line = line;
     if (!tokenizer(line, info))
     {
-      free(line);
-      free(info);
-      free_all(alloc_head);
+      chad_free(info, alloc_head);
       return;
     }
     join_quotes(info->head, info);
@@ -284,15 +291,11 @@ void  chad_readline(t_info *info, t_alloc *alloc_head)
     cmd = lexer(info);
     if(cmd == NULL)
     {
-      free_all(alloc_head);
-      free(line);
-      free(info);
+      chad_free(info, alloc_head);
       return;
     }
     // print_cmd_and_redir(cmd);
-    free_all(alloc_head);
-    free(line);
-    free(info);
+    chad_free(info, alloc_head);
 }
 
 void  main_loop()
