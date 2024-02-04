@@ -2,31 +2,7 @@
 
 #include "../inc/minish.h"
 
-char	*chad_strjoin(const char *s1, const char *s2, t_alloc *alloc_head)
-{
-	size_t	i;
-	size_t	j;
-	size_t	full_len;
-	char	*full_str;
 
-	i = 0;
-	j = 0;
-	full_len = ft_strlen(s1) + ft_strlen(s2) + 1;
-	if (!s1 || !s2)
-		return (NULL);
-	full_str = (char *)chad_alloc(full_len , sizeof(char), alloc_head);
-	if (!full_str)
-		return (NULL);
-	while (s1[i] && i < full_len)
-	{
-		full_str[i] = s1[i];
-		i++;
-	}
-	while (s2[j] && i < full_len)
-		full_str[i++] = s2[j++];
-	full_str[i] = '\0';
-	return (full_str);
-}
 
 
 t_oken **parse(const char *line);
@@ -77,6 +53,7 @@ t_oken *add_token(char *str_token, t_info *info) {
     return (token);
   }
 }
+
 void handle_operator(char *line, t_info *info) {
   t_oken *new_token;
   if (line[info->cursor] == '|') {
@@ -89,28 +66,24 @@ void handle_operator(char *line, t_info *info) {
   } 
   else if (line[info->cursor] == '>') {
     if ((line[info->cursor + 1]) == '>') {
-      char *str_token = ft_strdup(">>");
-      add_address(str_token, info->alloc_head);
-      new_token = add_token(str_token, info);
+      char *str_token = chad_strdup(">>", info->alloc_head);
+        new_token = add_token(str_token, info);
       new_token->data_type = 4;
       info->cursor += 2;
     } else {
-      char *str_token = ft_strdup(">");
-      add_address(str_token, info->alloc_head);
+      char *str_token = chad_strdup(">",  info->alloc_head);
       new_token = add_token(str_token, info);
       new_token->data_type = 2;
       info->cursor += 1;
     }
   } else if (line[info->cursor] == '<') {
     if (line[info->cursor + 1] == '<') {
-      char *str_token = ft_strdup("<<");
-      add_address(str_token, info->alloc_head);
+      char *str_token = chad_strdup("<<", info->alloc_head);
       new_token = add_token(str_token, info);
       new_token->data_type = 3;
       info->cursor += 2;
     } else {
-      char *str_token = ft_strdup("<");
-      add_address(str_token, info->alloc_head);
+      char *str_token = chad_strdup("<",  info->alloc_head);
       new_token = add_token(str_token, info);
       new_token->data_type = 1;
       info->cursor += 1;
@@ -275,8 +248,10 @@ void  chad_readline(t_info *info, t_alloc *alloc_head)
     info->line = line;
     tokenizer(line, info);
     join_quotes(info->head, info);
+    print_tokens(info->head);
+    return;
     cmd = lexer(info);
-    print_all_cmd(cmd);
+    // print_all_cmd(cmd);
     // info->alloc_head->address = NULL;
     // info->head = NULL;
     free_all(alloc_head);
