@@ -66,8 +66,13 @@ void print_cmd(t_cmd *cmd) {
 bool	check_token_syntax(t_oken *tokens)
 {
 //	free on exit
-	if (tokens->data_type != WORD && tokens->data_type != PIPE)
+	if (tokens->data_type != WORD && tokens->data_type != PIPE && tokens->next != NULL)
 	{
+		if (tokens->next->data_type != WORD && tokens->next->data_type != PIPE)
+		{
+				printf("syntax error near unexpected token `%s'\n", tokens->next->token);
+				return (TRUE);
+		}
 		printf("syntax error near unexpected token `newline'\n");
 		return (TRUE);
 	}
