@@ -75,7 +75,7 @@ void	print_tokens(t_oken *head);
 void	handle_operator(char *line, t_info *info);
 t_oken *handle_word(char *line, t_info *info);
 void	handle_dollar(char *line, t_info *info);
-t_info	*main_loop(char *line, t_info *info);
+void  main_loop(void);
 bool	check_line(char *line, t_info *info);
 int	word_len(t_info *info);
 bool	valid_quotes(t_info *info);

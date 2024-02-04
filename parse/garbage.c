@@ -52,7 +52,7 @@ void free_all(t_alloc *head) {
     head = head->next;
     if (tmp->address)
     {
-      puts("freeing");
+      // puts("freeing");
     free(tmp->address);
     free(tmp->alloc_node);
     tmp->address = NULL;
@@ -60,6 +60,6 @@ void free_all(t_alloc *head) {
     }
 	// puts("freeing");
   }
-    // free(head->address);
-    // free(head->alloc_node);
+    free(head->address);
+    free(head->alloc_node);
 }

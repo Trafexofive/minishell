@@ -230,6 +230,12 @@ t_info *tokenizer(char *line, t_info *info) {
 
   return (info);
 }
+void f(void)
+{
+  fprintf(stderr, "exiting\n");
+  system("leaks minishell");
+}
+
 
 void print_all_cmd(t_cmd *cmd) 
 {
@@ -260,6 +266,9 @@ void  chad_readline(t_info *info, t_alloc *alloc_head)
     {
       free(line);
       free_all(alloc_head);
+      free(info);
+
+      atexit(f);
       exit(0);
     }
     add_history(line);
@@ -271,18 +280,15 @@ void  chad_readline(t_info *info, t_alloc *alloc_head)
     // info->alloc_head->address = NULL;
     // info->head = NULL;
     free_all(alloc_head);
-    // free(line);
+    free(line);
 
-    // free(info);
+    free(info);
 }
 
-int main(void) {
+void  main_loop()
+{
   t_info *info;
   t_alloc *alloc_head;
-
-  // info->alloc_head = alloc_head;
-  // char *line;
-  // t_cmd *cmd;
 
 while (TRUE)
 {
@@ -296,6 +302,10 @@ while (TRUE)
   chad_readline(info, alloc_head);
 
 }
+}
+
+int main(void) {
+  main_loop();
   
   return EXIT_SUCCESS;
 }
