@@ -15,4 +15,7 @@
 #define PIPE 5
 #define WORD 6
 
+#define PIPE_CHAR '|'
+#define REDIR_OUT_CHAR '>'
+#define REDIR_IN_CHAR '<'
 #endif

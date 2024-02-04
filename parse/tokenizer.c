@@ -1,10 +1,5 @@
 
-
 #include "../inc/minish.h"
-
-
-
-
 
 bool check_line(char *line, t_info *info) // for checking early parse errors
 {
@@ -209,7 +204,6 @@ t_info *tokenizer(char *line, t_info *info) {
     else if (is_space(line[info->cursor]))
       info->cursor++;
   }
-
   return (info);
 }
 void f(void)
@@ -230,7 +224,7 @@ void print_all_cmd(t_cmd *cmd)
 }
 
 void print_cmd_and_redir(t_cmd *cmd) {
-  print_cmd(cmd);
+  print_all_cmd(cmd);
   print_redir(cmd->redir);
   print_redir(cmd->redir_out);
 }
@@ -292,7 +286,7 @@ void  chad_readline(t_info *info, t_alloc *alloc_head)
       chad_free(info, alloc_head);
       return;
     }
-    // print_cmd_and_redir(cmd);
+    print_cmd_and_redir(cmd);
     chad_free(info, alloc_head);
 }
 

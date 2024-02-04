@@ -68,6 +68,8 @@ bool	check_token_syntax(t_oken *tokens)
 //	free on exit
 	if (tokens->data_type != WORD && tokens->data_type != PIPE && tokens->next != NULL)
 	{
+		if (tokens->next->data_type == WORD)
+			return (FALSE);
 		if (tokens->next->data_type != WORD && tokens->next->data_type != PIPE)
 		{
 				printf("syntax error near unexpected token `%s'\n", tokens->next->token);
@@ -81,26 +83,26 @@ bool	check_token_syntax(t_oken *tokens)
 		printf("syntax error near unexpected token `|'\n");
 		return (TRUE);
 	}
-	while (tokens)
-	{
-		if (tokens == NULL)
-			break ;
-		if (tokens->data_type == REDIR_IN || tokens->data_type == REDIR_OUT || tokens->data_type == HEREDOC
-			|| tokens->data_type == APPEND || tokens->data_type == PIPE)
-		{
-			if (tokens->next == NULL)
-			{
-				printf("syntax error near unexpected token `newline'\n");
-				return (TRUE);
-			}				
-			else if (tokens->next->data_type != WORD)
-				{
-					printf("syntax error near unexpected token `%s'\n", tokens->token);
-					return (TRUE);
-				}
-		}
-		tokens = tokens->next;
-	}
+	// while (tokens)
+	// {
+	// 	if (tokens == NULL)
+	// 		break ;
+	// 	if (tokens->data_type == REDIR_IN || tokens->data_type == REDIR_OUT || tokens->data_type == HEREDOC
+	// 		|| tokens->data_type == APPEND || tokens->data_type == PIPE)
+	// 	{
+	// 		if (tokens->next == NULL)
+	// 		{
+	// 			printf("syntax error near unexpected token `newline'\n");
+	// 			return (TRUE);
+	// 		}				
+	// 		else if (tokens->next->data_type != WORD)
+	// 			{
+	// 				printf("syntax error near unexpected token `%s'\n", tokens->token);
+	// 				return (TRUE);
+	// 			}
+	// 	}
+	// 	tokens = tokens->next;
+	// }
 	return (FALSE);
 }
 int	words_before_pipe(t_oken *tokens)
@@ -119,52 +121,6 @@ int	words_before_pipe(t_oken *tokens)
 	return (count);
 }
 
-
-//untested
-// t_var *add_var(char *str_token, t_info *info)
-// {
-// 	t_var	*var;
-// 	t_var	*head;
-// 	char	*name;
-// 	char	*value;
-// 	int		i;
-
-// 	i = 0;
-// 	while (str_token[i] != '=')
-// 		i++;
-// 	name = chad_alloc(sizeof(char), i + 1, info->alloc_head);
-// 	i = 0;
-// 	while (str_token[i] != '=')
-// 	{
-// 		name[i] = str_token[i];
-// 		i++;
-// 	}
-// 	name[i] = '\0';
-// 	value = chad_alloc(sizeof(char), ft_strlen(str_token) - i, info->alloc_head);
-// 	i++;
-// 	int j = 0;
-// 	while (str_token[i])
-// 	{
-// 		value[j] = str_token[i];
-// 		i++;
-// 		j++;
-// 	}
-// 	value[j] = '\0';
-// 	var = chad_alloc(sizeof(t_var), 1, info->alloc_head);
-// 	var->name = name;
-// 	var->value = value;
-// 	var->next = NULL;
-// 	if (info->var == NULL)
-// 		info->var = var;
-// 	else
-// 	{
-// 		head = info->var;
-// 		while (head->next != NULL)
-// 			head = head->next;
-// 		head->next = var;
-// 	}
-// 	return (var);
-// }
 
 void	print_redir(t_redir *redir)
 {
@@ -194,10 +150,8 @@ void	handle_redir_out(t_oken *tokens, t_info *info, t_cmd *cmd)
 	redir->file = file;
 	redir->next = NULL;
 	//needs to iterate through the cmd list
-	if (cmd->redir_out == NULL) // segv here
-	{
+	if (cmd->redir_out == NULL)
 		cmd->redir_out = redir;
-	}
 	else
 	{
 		head = cmd->redir_out;
@@ -224,11 +178,8 @@ void	handle_redir_in(t_oken *tokens, t_info *info, t_cmd *cmd)
 	redir->type = type;
 	redir->file = file;
 	redir->next = NULL;
-	//needs to iterate through the cmd list
 	if (cmd->redir == NULL)
-	{
 		cmd->redir = redir;
-	}
 	else
 	{
 		head = cmd->redir;
@@ -236,7 +187,6 @@ void	handle_redir_in(t_oken *tokens, t_info *info, t_cmd *cmd)
 			head = head->next;
 		head->next = redir;
 	}
-	print_redir(redir);
 }
 
 t_cmd	*lexer(t_info *info)
@@ -258,18 +208,6 @@ t_cmd	*lexer(t_info *info)
 	i = 0;
 	while (tokens != NULL)
 	{
-		if (tokens->data_type == REDIR_OUT || tokens->data_type == APPEND)
-		{
-			handle_redir_out(tokens, info, cmd);
-			tokens = tokens->next->next;
-			continue ;
-		}
-		else if (tokens->data_type == REDIR_IN || tokens->data_type == HEREDOC)
-		{
-			handle_redir_in(tokens, info, cmd);
-			tokens = tokens->next->next;
-			continue ;
-		}
 		if (tokens->data_type == PIPE)
 		{
 			cmd->cmd[i] = NULL;
@@ -282,13 +220,27 @@ t_cmd	*lexer(t_info *info)
 			tokens = tokens->next;
 
 			i = 0;
+			// continue;
+		}else if (tokens->data_type == REDIR_OUT || tokens->data_type == APPEND)
+		{
+			handle_redir_out(tokens, info, cmd);
+			tokens = tokens->next->next;
+			continue ;
 		}
-		// if (tokens->data_type == WORD)
-		// {
-		// 	cmd->cmd[i] = tokens->token;
-		// 	if (tokens->dollar_presence == TRUE)
-		// 		cmd->var = add_var(tokens->token, info);
-		// }
+		else if (tokens->data_type == REDIR_IN || tokens->data_type == HEREDOC)
+		{
+			handle_redir_in(tokens, info, cmd);
+			tokens = tokens->next->next;
+			continue ;
+		}
+
+		if (tokens->data_type == WORD)
+		{
+			cmd->cmd[i] = tokens->token;
+			// if (tokens->dollar_presence == TRUE)
+				// expanded_var(t_list **env_var, char *var); prototype
+				// cmd->var = add_var(tokens->token, info);
+		}
 		if (tokens->next == NULL)
 		{
 			cmd->cmd[i + 1] = NULL;

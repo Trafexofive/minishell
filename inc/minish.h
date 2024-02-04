@@ -21,23 +21,17 @@ typedef struct s_token {
   bool dollar_presence;
   bool  join_next; // words should also be joined if they connect with a quote.
                         // done
-  int quote_type;       // 0 - singleq, 1 - dblquote , -1 not quote in token
+  int quote_type;
 } t_oken;
-
-typedef struct s_lex {
-  bool flag;
-} t_lex;
 
 typedef struct s_cmd {
   struct s_token *tokens;
   char **cmd;
   struct s_cmd *next;
   struct s_cmd *prev;
-  struct s_redir *redir; // if not redir set to NULL
+  struct s_redir *redir;
   struct s_redir *redir_out;
-  struct s_var *var;
-  int status;
-  int pid;
+  struct s_var *var; // still not implemented if ever going to be
 } t_cmd;
 
 typedef struct s_redir {
@@ -59,7 +53,6 @@ typedef struct s_info {
   char *line;
   int cursor;
   struct s_var *var;
-  struct s_token *pipe;
   struct s_token *head;
 } t_info;
 
