@@ -90,10 +90,7 @@ void handle_operator(char *line, t_info *info) {
     }
   }
 }
-// syntax checking
-void check_syntax(t_oken **tokens);
 
-// tokenizing words and operators
 
 void  join_quotes(t_oken *head, t_info *info)
 {
@@ -166,7 +163,6 @@ t_oken *handle_word(char *line, t_info *info) {
     i++;
   }
   str_token[len] = '\0';
-  printf("char at cursor: %c\n", line[i]);
   // word + quotes are joinning, but quotes + word are not
   new_token = add_token(str_token, info);
     if (line[i] == DQUOTE)
@@ -229,6 +225,25 @@ void print_all_cmd(t_cmd *cmd)
   }
 }
 
+void print_cmd_and_redir(t_cmd *cmd) {
+  print_cmd(cmd);
+  print_redir(cmd->redir);
+  print_redir(cmd->redir_out);
+}
+
+
+bool  line_is_empty(char *line)
+{
+  int i = 0;
+  while (line[i])
+  {
+    if (line[i] != ' ')
+      return FALSE;
+    i++;
+  }
+  return TRUE;
+}
+
 void  chad_readline(t_info *info, t_alloc *alloc_head)
 {
   char *line;
@@ -239,32 +254,44 @@ void  chad_readline(t_info *info, t_alloc *alloc_head)
     {
       return;
     }
-    if (line[0] == '\0')
+    if (line[0] == '\0' || line_is_empty(line))
     {
       free(line);
+      free(info);
+      free_all(alloc_head);
       return;
     }
     else if (strcmp(line, "exit") == 0)
     {
       free(line);
-      free_all(alloc_head);
       free(info);
+      free_all(alloc_head);
 
-      atexit(f);
+      // atexit(f);
       exit(0);
     }
     add_history(line);
     info->line = line;
-    tokenizer(line, info);
+    if (!tokenizer(line, info))
+    {
+      free(line);
+      free(info);
+      free_all(alloc_head);
+      return;
+    }
     join_quotes(info->head, info);
-    print_tokens(info->head);
+    // print_tokens(info->head);
     cmd = lexer(info);
-    // print_all_cmd(cmd);
-    // info->alloc_head->address = NULL;
-    // info->head = NULL;
+    if(cmd == NULL)
+    {
+      free_all(alloc_head);
+      free(line);
+      free(info);
+      return;
+    }
+    // print_cmd_and_redir(cmd);
     free_all(alloc_head);
     free(line);
-
     free(info);
 }
 
@@ -273,18 +300,17 @@ void  main_loop()
   t_info *info;
   t_alloc *alloc_head;
 
-while (TRUE)
-{
+  while (TRUE)
+  {
   info = ft_calloc(1, sizeof(t_info));
   alloc_head = ft_calloc(1, sizeof(t_alloc));
   alloc_head->next = NULL;
   alloc_head->address = ft_strdup("placeholder");
   info->alloc_head = alloc_head;
-  // fprintf(stderr, "address: %p\n", alloc_head);
   info->head = NULL;
   chad_readline(info, alloc_head);
 
-}
+  }
 }
 
 int main(void) {

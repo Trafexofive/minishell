@@ -4,8 +4,9 @@
 
 void parse_error(const char *exit_msg, t_info *info) {
   printf("%s\n", exit_msg);
-  // free_all(info->alloc_head);
-  (void)info;
+      free(info->line);
+      free(info);
+      free_all(info->alloc_head);
   exit(1);
 }
 
@@ -86,6 +87,8 @@ int word_len(t_info *info) {
   }
   return (j);
 }
+
+//segv here when u start the line with a quote
 bool valid_quotes(t_info *info) {
   char *line;
   int i;
@@ -104,12 +107,12 @@ bool valid_quotes(t_info *info) {
     i++;
   }
   if (dquote_c % 2 != 0 && dquote_c != 0) {
-    puts("invalid quotes");
-    parse_error("invalid quotes", info);
+    printf("invalid quotes");
+    return (FALSE);
   }
   if (quote_c % 2 != 0 && quote_c != 0) {
-    puts("invalid quotes");
-    parse_error("invalid quotes", info);
+    printf("invalid quotes");
+    return (FALSE);
   }
   return (TRUE);
 }
@@ -120,9 +123,9 @@ const char *translate(int c) {
   if (c == 2)
     return ("REDIR_OUT");
   if (c == 3)
-    return ("heredoc");
+    return ("HEREDOC");
   if (c == 4)
-    return ("herestring");
+    return ("APPEND");
   if (c == 5)
     return ("PIPE");
   if (c == 6)

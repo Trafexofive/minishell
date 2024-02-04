@@ -87,6 +87,8 @@ void print_all_cmd(t_cmd *cmd);
 const char *translate(int c);
 char	*chad_strjoin(const char *s1, const char *s2, t_alloc *alloc_head);
 char *chad_strdup(const char *s1, t_alloc *alloc_head);
+void	print_redir(t_redir *redir);
+bool	check_token_syntax(t_oken *tokens);
 
 
 // ls -la | grep .c "keep"| wc -l | cat -e 'hello'

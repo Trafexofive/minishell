@@ -5,8 +5,6 @@
 
 #define TRUE 1
 #define FALSE 0
-// #define WORD 2
-// #define OP 3
 #define QUOTE 39
 #define DQUOTE 34
 
@@ -16,6 +14,5 @@
 #define APPEND 4
 #define PIPE 5
 #define WORD 6
-#define VAR 7
 
 #endif
