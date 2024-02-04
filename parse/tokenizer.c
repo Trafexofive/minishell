@@ -166,8 +166,17 @@ t_oken *handle_word(char *line, t_info *info) {
     i++;
   }
   str_token[len] = '\0';
-  info->cursor = i;
+  printf("char at cursor: %c\n", line[i]);
+  
   new_token = add_token(str_token, info);
+    if (line[i] == DQUOTE)
+    new_token->join_next = TRUE;
+  else if (line[i] == QUOTE)
+    new_token->join_next = TRUE;
+  else
+    new_token->join_next = FALSE;
+
+  info->cursor = i;
   new_token->data_type = 6;
   return (new_token);
 }
