@@ -53,26 +53,24 @@ t_oken *add_token(char *str_token, t_info *info) {
   }
 }
 
-void  handle_pipe(char *line, t_info *info)
+void  handle_pipe(t_info *info)
 {
   t_oken *new_token;
-  if (line[info->cursor] == '|') {
     char *str_token = chad_alloc(1, 2, info->alloc_head);
-    str_token[0] = '|';
+    str_token[0] = PIPE_CHAR;
     str_token[1] = '\0';
     new_token = add_token(str_token, info);
-    new_token->data_type = 5;
+    new_token->data_type = PIPE;
     info->cursor += 1;
-  } 
 }
 
 void handle_operator(char *line, t_info *info) {
   t_oken *new_token;
-  if (line[info->cursor] == '|') {
-    handle_pipe(line, info);
+  if (line[info->cursor] == PIPE_CHAR){
+    handle_pipe(info);
   }
-  else if (line[info->cursor] == '>') {
-    if ((line[info->cursor + 1]) == '>') {
+  else if (line[info->cursor] == REDIR_OUT_CHAR) {
+    if ((line[info->cursor + 1]) == REDIR_OUT_CHAR) {
       char *str_token = chad_strdup(">>", info->alloc_head);
         new_token = add_token(str_token, info);
       new_token->data_type = 4;
@@ -83,8 +81,8 @@ void handle_operator(char *line, t_info *info) {
       new_token->data_type = 2;
       info->cursor += 1;
     }
-  } else if (line[info->cursor] == '<') {
-    if (line[info->cursor + 1] == '<') {
+  } else if (line[info->cursor] == REDIR_IN_CHAR) {
+    if (line[info->cursor + 1] == REDIR_IN_CHAR) {
       char *str_token = chad_strdup("<<", info->alloc_head);
       new_token = add_token(str_token, info);
       new_token->data_type = 3;
@@ -130,8 +128,8 @@ t_oken *handle_quote(char *line, t_info *info) {
   int len = quote_len(line, info);
   if (len == -1)
     return NULL;
-  str_token = (char *)chad_alloc(1, len, info->alloc_head);
-  while (j < len) {
+  str_token = (char *)chad_alloc(1, len + 1, info->alloc_head);
+  while (j < len && str_token[j] && line[i]) {
     str_token[j] = line[i];
     j++;
     i++;
@@ -276,7 +274,7 @@ void  chad_readline(t_info *info, t_alloc *alloc_head)
     {
       chad_free(info, alloc_head);
 
-      atexit(f);
+      // atexit(f);
       exit(0);
     }
     add_history(line);

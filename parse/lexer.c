@@ -107,8 +107,6 @@ int	words_before_pipe(t_oken *tokens)
 {
 	int		count;
 
-	// if (info->pipe == NULL)
-	// 	tokens = info->pipe;
 	count = 0;
 	while (tokens)
 	{
