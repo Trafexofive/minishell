@@ -102,16 +102,16 @@ bool valid_quotes(t_info *info) {
   while (line[i]) {
     if (line[i] == DQUOTE)
       dquote_c++;
-    if (line[i] == DQUOTE)
+    if (line[i] == QUOTE)
       quote_c++;
     i++;
   }
   if (dquote_c % 2 != 0 && dquote_c != 0) {
-    printf("invalid quotes");
+    printf("invalid quotes\n");
     return (FALSE);
   }
   if (quote_c % 2 != 0 && quote_c != 0) {
-    printf("invalid quotes");
+    printf("invalid quotes\n");
     return (FALSE);
   }
   return (TRUE);
