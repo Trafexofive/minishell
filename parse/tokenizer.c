@@ -258,7 +258,6 @@ void  chad_readline(t_info *info, t_alloc *alloc_head)
     tokenizer(line, info);
     join_quotes(info->head, info);
     print_tokens(info->head);
-    return;
     cmd = lexer(info);
     // print_all_cmd(cmd);
     // info->alloc_head->address = NULL;
