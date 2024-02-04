@@ -167,7 +167,7 @@ t_oken *handle_word(char *line, t_info *info) {
   }
   str_token[len] = '\0';
   printf("char at cursor: %c\n", line[i]);
-  
+  // word + quotes are joinning, but quotes + word are not
   new_token = add_token(str_token, info);
     if (line[i] == DQUOTE)
     new_token->join_next = TRUE;
