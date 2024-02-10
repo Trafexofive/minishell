@@ -1,44 +1,37 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: mlamkadm <mlamkadm@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/10/19 09:19:12 by mlamkadm          #+#    #+#              #
-#    Updated: 2024/02/04 05:31:58 by mlamkadm         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+SRCS			=	ft_isalpha.c ft_isprint.c ft_memcmp.c  ft_putchar_fd.c ft_split.c \
+					ft_strlcat.c ft_strncmp.c ft_substr.c ft_atoi.c ft_isalnum.c \
+					ft_itoa.c ft_memcpy.c  ft_putendl_fd.c ft_strchr.c  ft_strlcpy.c \
+					ft_strnstr.c ft_tolower.c ft_bzero.c   ft_isascii.c \
+					ft_memmove.c ft_putnbr_fd.c  ft_strdup.c  ft_strlen.c  ft_strrchr.c \
+					ft_toupper.c ft_calloc.c  ft_isdigit.c ft_memchr.c  ft_memset.c  \
+					ft_putstr_fd.c  ft_strjoin.c ft_strmapi.c ft_strtrim.c ft_striteri.c ft_atoul.c \
+					ft_ptrsize.c ft_free_double.c ft_lstadd_back_bonus.c ft_lstadd_front_bonus.c ft_lstclear_bonus.c \
+					ft_lstdelone_bonus.c ft_lstiter_bonus.c ft_lstlast_bonus.c \
+					ft_lstmap_bonus.c ft_lstnew_bonus.c ft_lstsize_bonus.c ft_lstprint_str.c \
+					ft_lstfind_str.c ft_lstfind_str_bro.c
+OBJS			= $(SRCS:.c=.o)
 
-CC = cc
+CC				= cc
+RM				= rm -f
+CFLAGS			= -c -Wall -Wextra -Werror -g -I.
 
-NAME = libft.a
+NAME			= libft.a
 
-SRC = ft_isalpha.c ft_isdigit.c ft_isprint.c ft_strlen.c ft_putchar_fd.c\
-		ft_putstr_fd.c ft_putnbr_fd.c ft_calloc.c ft_bzero.c ft_memset.c ft_strdup.c\
+all:			$(NAME)
 
-OBJ = $(SRC:.c=.o)
+$(NAME): $(OBJS)
+	ar -rcs $(NAME) $(OBJS)
 
-HEADER = libft.h
+%.o:%.c libft.h
+	$(CC) $(CFLAGS) $<
 
-AR = ar -rcs
+clean:
+				$(RM) $(OBJS) $(BONUS_OBJS)
 
-RM = rm -rf
+fclean:			clean
+				$(RM) $(NAME)
 
-all : $(NAME)
+re:				fclean $(NAME)
 
-$(NAME) : $(OBJ)
-	$(AR) $(NAME) $(OBJ)
 
-%.o : %.c $(HEADER)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-clean :
-	$(RM) $(OBJ)
-
-fclean : clean
-	$(RM) $(NAME)
-	
-re : fclean all
-
-.PHONY : clean fclean re all
+.PHONY:	all clean fclean re bonus
